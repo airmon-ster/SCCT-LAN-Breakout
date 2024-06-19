@@ -36,3 +36,5 @@ sudo python3 ./scct.py --host <external host's ip address> --bc <your local broa
 - Join game and hope that host has the UDP port 3658 forwarded correctly to their PS2's internal IP address
   
 ![image](https://github.com/airmon-ster/SCCT-LAN-Breakout/assets/31023869/ed9cc908-bb97-4cc4-85e4-9d9aa60f4715)
+### Test
+Test server is currently up at 100.26.186.59. Later efforts will auto-healthcheck this and report appropriately.
