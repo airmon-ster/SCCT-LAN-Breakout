@@ -2,3 +2,4 @@
 .venv
 .flake8
 .env
+venv/

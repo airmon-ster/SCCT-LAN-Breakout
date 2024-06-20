@@ -1,6 +1,11 @@
 from scapy.all import IP, UDP, Ether, sniff, sendp, Raw
 import argparse
 from ipaddress import ip_address
+import base64
+from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
 
 # SCCTP Protocol Structure Example
 # FIND_REQUEST
@@ -83,10 +88,25 @@ def main() -> None:
     try:
         parser: argparse.ArgumentParser = argparse.ArgumentParser(description='SCCTP Server')
         parser.add_argument('--bc', type=str, help='The local broadcast address')
-        parser.add_argument('--host', type=str, help='The external host IP address', required=True)
+        parser.add_argument('--host', type=str, help='The host unique key', required=True)
+        parser.add_argument('--password', type=str, help='The password for the lobby to join', required=True)
         args: argparse.Namespace = parser.parse_args()
+        password = args.password
+        password = password.encode('utf-8')
 
-        ip_address(args.host)  # validate the IP address
+        salt = b'\xcdS:\x80\xdc\x8b)\x90IT\xd5\xbb\x93\x80\xc2\xd8'
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=salt,
+            iterations=100000,
+            backend=default_backend()
+        )
+
+        key = base64.urlsafe_b64encode(kdf.derive(password))
+        fernet = Fernet(key)
+        decrypted_host = fernet.decrypt(args.host.encode('utf-8')).decode('utf-8')
+        ip_address(decrypted_host)  # validate the IP address
         if args.bc:
             ip_address(args.bc)  # validate the IP address
 
