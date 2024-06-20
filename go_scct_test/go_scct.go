@@ -8,18 +8,18 @@ import (
 
     "github.com/google/gopacket"
     "github.com/google/gopacket/pcap"
+    "github.com/google/gopacket/layers"
 )
 
 const (
-    device       = "eth0" // Replace with correct network interface name
-    snapshotLen  = 1024
-    promiscuous  = false
-    timeout      = 30 * time.Second
-    bufferSize   = 65535
-    ps2IP        = "192.168.0.166"
-    ps2Port      = 3658
-    remoteIP     = "100.26.186.59" 
-    remotePort   = 3658                   
+    device     = "en0" // Replace with correct network interface name
+    snapshotLen = 1024
+    promiscuous = false
+    timeout     = 30 * time.Second
+    ps2IP      = "192.168.0.166"
+    ps2Port    = 3658
+    remoteIP   = "100.26.186.59"
+    remotePort = 3658
 )
 
 func main() {
@@ -46,36 +46,51 @@ func main() {
         log.Fatal(err)
     }
 
-    // Buffer for incoming packets
-    buffer := make([]byte, bufferSize)
-
     // Packet processing loop
     packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
     for packet := range packetSource.Packets() {
-        // Extract UDP layer
-        udpLayer := packet.Layer(gopacket.LayerTypeUDP)
-        if udpLayer == nil {
+        // Parse packet layers
+        parser := gopacket.NewDecodingLayerParser(
+            layers.LayerTypeEthernet,
+            &layers.IPv4{},
+            &layers.UDP{},
+            gopacket.PayloadLayer,
+        )
+
+        foundLayerTypes := []gopacket.LayerType{}
+        err := parser.DecodeLayers(packet.Data(), &foundLayerTypes)
+        if err != nil {
+            log.Println("Error decoding layers:", err)
             continue
         }
 
-        udp, ok := udpLayer.(*gopacket.UDP)
-        if !ok {
+        var udp *layers.UDP
+        var payload []byte
+
+        for _, layerType := range foundLayerTypes {
+            if layerType == layers.LayerTypeUDP {
+                udp = parser.Layer(layerType).(*layers.UDP)
+            } else if layerType == gopacket.LayerTypePayload {
+                payload = parser.Layer(layerType).Payload()
+            }
+        }
+
+        if udp == nil {
+            log.Println("UDP layer not found in packet")
             continue
         }
 
         // Check if packet is destined for PS2 console
         if udp.DstPort == layers.UDPPort(ps2Port) && udp.DstIP.String() == ps2IP {
-            // Extract payload
-            payload := udp.Payload
-
             // Forward packet to remote destination
-            _, err := net.DialUDP("udp", nil, remoteUDPAddr)
+            conn, err := net.DialUDP("udp", nil, remoteUDPAddr)
             if err != nil {
-                log.Println("Error forwarding UDP packet:", err)
+                log.Println("Error opening UDP connection:", err)
                 continue
             }
+            defer conn.Close()
 
-            _, err = conn.WriteToUDP(payload, remoteUDPAddr)
+            _, err = conn.Write(payload)
             if err != nil {
                 log.Println("Error forwarding UDP packet:", err)
                 continue
