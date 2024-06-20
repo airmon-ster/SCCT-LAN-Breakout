@@ -1,6 +1,6 @@
 module example/go_scct
 
-go 1.22.2
+go 1.22
 
 require github.com/google/gopacket v1.1.19
 
