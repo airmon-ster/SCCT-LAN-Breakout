@@ -2,3 +2,5 @@
 .venv
 .flake8
 .env
+__pycache__
+.vscode
