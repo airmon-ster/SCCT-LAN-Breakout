@@ -9,6 +9,7 @@ import requests
 
 def main():
     ip = requests.get('https://api.ipify.org').text.strip()
+    # ip = '100.20.186.59'
     print("Your public IP address:", ip)
 
     password = getpass.getpass('Enter password for lobby: ')
