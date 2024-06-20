@@ -1,61 +1,87 @@
 package main
 
 import (
-	"fmt"
-	"net"
-	"os"
+    "fmt"
+    "log"
+    "net"
+    "time"
+
+    "github.com/google/gopacket"
+    "github.com/google/gopacket/pcap"
+)
+
+const (
+    device       = "eth0" // Replace with correct network interface name
+    snapshotLen  = 1024
+    promiscuous  = false
+    timeout      = 30 * time.Second
+    bufferSize   = 65535
+    ps2IP        = "192.168.0.166"
+    ps2Port      = 3658
+    remoteIP     = "100.26.186.59" 
+    remotePort   = 3658                   
 )
 
 func main() {
-	// Local IP and port for the PS2 on your LAN
-	localIP := "192.168.0.166"
-	localPort := 3658
+    // Open device for capturing packets
+    handle, err := pcap.OpenLive(device, snapshotLen, promiscuous, timeout)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer handle.Close()
 
-	// Remote IP and port (example for another PS2 on a different LAN)
-	remoteIP := "100.26.186.59"
-	remotePort := 3658
+    // Set filter to capture UDP packets destined for 192.168.0.166
+    filter := fmt.Sprintf("udp and dst host %s and dst port %d", ps2IP, ps2Port)
+    err = handle.SetBPFFilter(filter)
+    if err != nil {
+        log.Fatal(err)
+    }
 
-	// Start UDP listener on the local IP and port
-	localAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", localIP, localPort))
-	if err != nil {
-		fmt.Println("Error resolving local address:", err)
-		os.Exit(1)
-	}
+    fmt.Printf("Listening for UDP packets destined for %s:%d\n", ps2IP, ps2Port)
 
-	conn, err := net.ListenUDP("udp", localAddr)
-	if err != nil {
-		fmt.Println("Error listening:", err)
-		os.Exit(1)
-	}
-	defer conn.Close()
+    // Prepare connection to forward packets
+    remoteAddr := fmt.Sprintf("%s:%d", remoteIP, remotePort)
+    remoteUDPAddr, err := net.ResolveUDPAddr("udp", remoteAddr)
+    if err != nil {
+        log.Fatal(err)
+    }
 
-	fmt.Printf("Listening on %s:%d\n", localIP, localPort)
+    // Buffer for incoming packets
+    buffer := make([]byte, bufferSize)
 
-	// Create a buffer for incoming data
-	buffer := make([]byte, 1024)
+    // Packet processing loop
+    packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
+    for packet := range packetSource.Packets() {
+        // Extract UDP layer
+        udpLayer := packet.Layer(gopacket.LayerTypeUDP)
+        if udpLayer == nil {
+            continue
+        }
 
-	for {
-		// Read UDP packet from PS2
-		n, addr, err := conn.ReadFromUDP(buffer)
-		if err != nil {
-			fmt.Println("Error reading:", err)
-			continue
-		}
+        udp, ok := udpLayer.(*gopacket.UDP)
+        if !ok {
+            continue
+        }
 
-		fmt.Printf("Received UDP packet from %s:%d\n", addr.IP.String(), addr.Port)
+        // Check if packet is destined for PS2 console
+        if udp.DstPort == layers.UDPPort(ps2Port) && udp.DstIP.String() == ps2IP {
+            // Extract payload
+            payload := udp.Payload
 
-		// Simulate sending the packet to the remote PS2
-		remoteAddr := &net.UDPAddr{
-			IP:   net.ParseIP(remoteIP),
-			Port: remotePort,
-		}
+            // Forward packet to remote destination
+            _, err := net.DialUDP("udp", nil, remoteUDPAddr)
+            if err != nil {
+                log.Println("Error forwarding UDP packet:", err)
+                continue
+            }
 
-		_, err = conn.WriteToUDP(buffer[:n], remoteAddr)
-		if err != nil {
-			fmt.Println("Error writing to remote:", err)
-			continue
-		}
+            _, err = conn.WriteToUDP(payload, remoteUDPAddr)
+            if err != nil {
+                log.Println("Error forwarding UDP packet:", err)
+                continue
+            }
 
-		fmt.Printf("Sent UDP packet to %s:%d\n", remoteIP, remotePort)
-	}
+            fmt.Printf("Forwarded UDP packet to %s:%d\n", remoteIP, remotePort)
+        }
+    }
 }
