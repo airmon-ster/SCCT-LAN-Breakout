@@ -3,7 +3,8 @@ from time import sleep
 from scapy.all import IP, UDP, Ether, sendp, Raw
 import validators
 from socket import gethostbyname
-import sys
+from upnpy import exceptions
+import upnpy
 
 # UDP 100171 keep alive packet. Host sends this to client
 # mac - 0008a20c0c9600041f82a8fc0800
@@ -29,19 +30,51 @@ class Server:
                 for player in self.players:
                     if validators.domain(player):
                         player = gethostbyname(player)
-                    sys.stdout.write('.')  # Print a dot for each player
                     for port in self.ports:
                         pkt = Ether()/IP(dst=player, src=self.local_ps2)/UDP(sport=3658, dport=port)/Raw()
                         pkt[Raw].load = SERVER_TO_CLIENT_KEEP_ALIVE
                         sendp(pkt, verbose=0)
-                sleep(30)
+                        print(f"Sent keep alive packet to {player} on port {port}")
+                print("Sent keep alive packets to all players. Sleeping for 15 seconds.")
+                sleep(15)
 
         except Exception as e:
             print(f"Error in hole_punch_fw: {repr(e)}")
 
+    def attempt_upnp(self) -> None:
+        try:
+            print("Attempting UPnP...")
+            upnp = upnpy.UPnP()
+            upnp.discover()
+            if device := upnp.get_igd():
+                print(f"Found UPnP gateway device: {device}")
+                services = device.get_services()
+                for service in services:
+                    for action in service.get_actions():
+                        if action.name == 'AddPortMapping':
+                            service.AddPortMapping(
+                                NewRemoteHost='',
+                                NewExternalPort=3658,
+                                NewProtocol='UDP',
+                                NewInternalPort=3658,
+                                NewInternalClient=self.local_ps2,
+                                NewEnabled=1,
+                                NewPortMappingDescription='SCCTMapping',
+                                NewLeaseDuration=0
+                            )
+        except exceptions.IGDError as e:
+            print(f"Error in attempt_upnp finding gateway device: {repr(e)}")
+            print("Continuing without UPnP.")
+        except exceptions.SOAPError as se:
+            print(f"Error in attempt_upnp while attempting to AddPortMapping: {repr(se)}")
+            print(("Your UPnP server may not allow a remote device to make a rule for your PS2,"
+                   " but we tried anyway. (miniupnp secure_mode=1)"))
+            print("Continuing without UPnP.")
+        except Exception as e:
+            print(f"Error in attempt_upnp: {repr(e)}")
+
     def __post_init__(self) -> None:
         build_server_banner(self)
-        self.hole_punch_fw()
 
 
 def build_server_banner(server: Server) -> None:

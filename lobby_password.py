@@ -1,11 +1,11 @@
 import base64
-import os
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 import getpass
 import requests
+
 
 def main():
     ip = requests.get('https://api.ipify.org').text.strip()
@@ -32,6 +32,7 @@ def main():
     encrypted_ip = fernet.encrypt(ip.encode('utf-8'))
 
     print("Share this string with other players connecting:", encrypted_ip.decode('utf-8'))
+
 
 if __name__ == '__main__':
     main()
