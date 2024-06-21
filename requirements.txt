@@ -1,2 +1,4 @@
 scapy==2.5.0
 validators==0.28.3
+UPnPy==1.1.8
+urllib3==2.2.2
