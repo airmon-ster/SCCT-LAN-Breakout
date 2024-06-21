@@ -9,12 +9,13 @@ def main() -> None:
     try:
         parser: argparse.ArgumentParser = argparse.ArgumentParser(description='SCCTP Server',
                                                                   usage='%(prog)s [options]',
-                                                                  epilog="For more help or information, visit us on discord at https://discord.gg/SC2EXYHA")
+                                                                  epilog="For more help or information, visit us on discord at https://discord.gg/SC2EXYHA\n")
         parser.add_argument('action', type=str, help='The action to perform', choices=['client', 'server'])
         parser.add_argument('--broadcast', type=str, help='Your local broadcast address')
         parser.add_argument('--remote', type=str, help='The external host IP address')
         parser.add_argument('--sip', type=str, help='The source IP address of the host\'s ps2')
         parser.add_argument('--players', type=str, help='Space separated hostnames or IPs of the players joining the game', nargs='+')
+        parser.add_argument('--upnp', action=argparse.BooleanOptionalAction, help='Attempt to use UPnP to open a port on the router')
         args: argparse.Namespace = parser.parse_args()
 
         if args.action == 'client':
@@ -23,7 +24,7 @@ def main() -> None:
 
             remote = args.remote
             broadcast = args.broadcast
-            Client(remote=remote, broadcast=broadcast)
+            Client(remote=remote, broadcast=broadcast).listen()
 
         elif args.action == 'server':
             if not validate_server_parameters(args=args):
@@ -31,7 +32,10 @@ def main() -> None:
 
             local_ps2 = args.sip
             players = args.players
-            Server(local_ps2=local_ps2, players=players)
+            server = Server(local_ps2=local_ps2, players=players)
+            if args.upnp:
+                server.attempt_upnp()
+            server.hole_punch_fw()
 
         else:
             print("Invalid action. Please choose either client or server.")

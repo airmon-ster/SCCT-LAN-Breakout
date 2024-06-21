@@ -26,7 +26,7 @@ def validate_server_parameters(args: argparse.Namespace) -> bool:
         if not args.players:
             print("You must specify the players joining the game. Example: --players airmonster.com 1.1.1.1 player.duckdns.com")
             return False
-        
+
         if not validate_players(players=args.players):
             return False
         return True

@@ -52,7 +52,6 @@ class Client:
         if not self.broadcast:
             self.broadcast = COMMON_LOCAL_NETWORK_BC
         build_client_banner(remote=self.remote, broadcast=self.broadcast)
-        self.listen()
 
 
 def send_response_packet(preamble: bytes, postamble: bytes, client: Client) -> None:
