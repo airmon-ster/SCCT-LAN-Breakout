@@ -5,6 +5,16 @@ import validators
 from socket import gethostbyname
 import sys
 
+# UDP 100171 keep alive packet. Host sends this to client
+# mac - 0008a20c0c9600041f82a8fc0800
+# ip - 45000025e8ad000040118229c0a80a46261b1ee8 - identification field increments by 1 for each packet. This also changes the checksum
+# udp - 27570e4a0011c611
+# ka_header - 0700
+# 4f4ceb2d47ad
+# ka_trailer - 6b000000000000000000
+
+SERVER_TO_CLIENT_KEEP_ALIVE = b'\x07\x00\x4f\x4c\xeb\x2d\x47\xad\x6b\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+
 
 @dataclass
 class Server:
@@ -21,8 +31,8 @@ class Server:
                         player = gethostbyname(player)
                     sys.stdout.write('.')  # Print a dot for each player
                     for port in self.ports:
-                        pkt = Ether()/IP(dst=player, src=self.local_ps2)/UDP(sport=3658, dport=port)/Raw((b'\x73\x70\x6C\x69\x6E\x74\x65\x72\x63\x65\x6C'
-                                                                                                          b'\x6C\x6F\x6E\x6C\x69\x6E\x65\x2E\x6E\x65\x74'))  # splintercellonline.net
+                        pkt = Ether()/IP(dst=player, src=self.local_ps2)/UDP(sport=3658, dport=port)/Raw()
+                        pkt[Raw].load = SERVER_TO_CLIENT_KEEP_ALIVE
                         sendp(pkt, verbose=0)
                 sleep(30)
 
