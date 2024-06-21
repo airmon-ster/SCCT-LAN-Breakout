@@ -5,19 +5,29 @@ However, these hosted services have a number of issues that have inspired this s
 <br><br>
 Having said that, this workout will only work for the PS2 version of SCCT by emulating a server that relies on spoofed UDP packets that redirect the PS2 to the game host's server over the internet.
 <br><br>
-![image](https://github.com/airmon-ster/SCCT-LAN-Breakout/assets/31023869/9b24ebff-cd74-4b12-beb0-9a7f812c29fe)
+## Via Port Forwarding (100% Success rate)
+- Note: Not all ISPs allow incomming traffic to be routed to home IP Addresses. Carrier Grade NAT or other measures may be in place.
+
+![image](https://github.com/airmon-ster/SCCT-LAN-Breakout/assets/31023869/c12369bd-9a68-4d53-87ab-636e6fe48af7)
+## Via Firewall Hole Punching (Pre-Alpha Testing Phase)
+- Note: Some routers rewrite the source port as it leaves their NAT. For routers that do this, the player will be unable to join as the ports need to be predicted accurately by the host. Either configure your router to use static source ports during NAT, or provision a cloud redirector (out of the scope of this repo for now).
+<br><br>This is usually seen when others can join the host, but you still see a "Game no longer available screen." Ensure you are using the correct IP address and then troubleshoot.
+![image](https://github.com/airmon-ster/SCCT-LAN-Breakout/assets/31023869/b6f70a6a-ac6f-481c-a634-0cb61711ba16)
+## Via UPnP (Untested)
+- Note: This method is untested and may not work at all since some UPnP servers do not allow IPs other than the intended destination to make a UPnP request.
+  ![image](https://github.com/airmon-ster/SCCT-LAN-Breakout/assets/31023869/dfe662c6-fbc2-4f96-b9f3-50cea13a9b4a)
 <br><br>
 # Requirements
 As seen in the diagram above, there are a few requirements to get this up and running.
 <br>
 ### Host
 - Open UDP ports 3658 on their WAN address to allow the players to connect. Forward this port to the PS2's local IP address.
-- Configure their PS2 (or PCSX2 Emulator with matching network configuration) with a valid, working IP Address on their local network (As opposed to the XLINK configuration with strange MAC/10.253.0.0/16 configurations)
+- Configure their PS2 (or PCSX2 Emulator with matching network configuration) with a valid, working IP Address on their local network (As opposed to the XLINK configuration with MAC/10.253.0.0/16 configurations)
 ### Players
-- Configure their PS2 (or PCSX2 Emulator with matching network configuration)  with a valid, working IP Address on their local network (As opposed to the XLINK configuration with strange MAC/10.253.0.0/16 configurations)
-- Place a *nix based computer on that same network (Windows does not allow sending spoofed source IP addresses as raw sockets)
-- Install Python3 and python3-pip on the *nix based computer
-- Able to run the scct.py program on the *nix computer on their local network
+- Configure their PS2 (or PCSX2 Emulator with matching network configuration)  with a valid, working IP Address on their local network (As opposed to the XLINK configuration with MAC/10.253.0.0/16 configurations)
+- Place computer on that same network
+- Install Python3 and python3-pip
+- Able to run the scct.py program on their local network
 # Script Installation and Usage
 ### Install
 - Download this repository
@@ -27,9 +37,15 @@ cd <SCCT-LAN-Breakout>
 sudo apt install python3-pip
 python3 -m pip install -r requirements.txt
 ```
-### Run
+### Server Run
 ```
-sudo python3 ./scct.py --host <external host's ip address> --bc <your local broadcast address>
+sudo python ./scct.py --help
+sudo python ./scct.py server --sip <your ps2's private ip address> --players test.duckdns.org 1.1.1.1 valid.domain.or.ip.com [--upnp]
+```
+### Client Run
+```
+sudo python ./scct.py --help
+sudo python3 ./scct.py client --remote <external host's ip address> --broadcast <your local broadcast address>
 ```
 - Search for LAN Game
 - Hopefully when you now search for a game in the LAN menu, you will see the game hosted by SCCTPS2
