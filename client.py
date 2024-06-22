@@ -90,6 +90,7 @@ def parse_request_packet(pkt, client: Client) -> None:
     except Exception as e:
         print(f"Error in parse_request_packet: {repr(e)}")
 
+
 def obfuscate_ip(ip: str) -> str:
     # Encode the IP address using Base64
     encoded_ip = base64.urlsafe_b64encode(ip.encode())

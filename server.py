@@ -77,11 +77,11 @@ class Server:
     def __post_init__(self) -> None:
         build_server_banner(self)
 
+
 def obfuscate_ip(ip: str) -> str:
     # Encode the IP address using Base64
     encoded_ip = base64.urlsafe_b64encode(ip.encode())
     return encoded_ip.decode()
-
 
 
 def build_server_banner(server: Server) -> None:
