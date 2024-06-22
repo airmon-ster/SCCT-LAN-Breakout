@@ -7,3 +7,5 @@ __pycache__
 test-bed.ipynb
 test.py
 venv/
+dist/
+*.zip
