@@ -5,6 +5,7 @@ import validators
 from socket import gethostbyname
 from upnpy import exceptions
 import upnpy
+import base64
 
 # UDP 100171 keep alive packet. Host sends this to client
 # mac - 0008a20c0c9600041f82a8fc0800
@@ -77,6 +78,12 @@ class Server:
         build_server_banner(self)
 
 
+def obfuscate_ip(ip: str) -> str:
+    # Encode the IP address using Base64
+    encoded_ip = base64.urlsafe_b64encode(ip.encode())
+    return encoded_ip.decode()
+
+
 def build_server_banner(server: Server) -> None:
     # Show the user the entered information in a text table
     print("\n---------------------")
@@ -85,5 +92,5 @@ def build_server_banner(server: Server) -> None:
     print(f"Local PS2: {server.local_ps2}")
     print("Players:")
     for player in server.players:
-        print(f"  {player}")
+        print(f"  {obfuscate_ip(player)}")
     print("---------------------")
