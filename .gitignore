@@ -6,3 +6,4 @@ __pycache__
 .vscode
 test-bed.ipynb
 test.py
+venv/
