@@ -136,7 +136,7 @@ def run_server():
             players[idx] = deobfuscate_ip(item)
 
     # Construct the path to scct.py one directory back
-    scct_script_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'scct.py')
+    scct_script_path = os.path.join(os.path.dirname(__file__), 'scct.py')
 
     args = [scct_script_path, 'server', '--sip', ps2_ip, '--players'] + players
     # Start the script in a separate subprocess
@@ -155,8 +155,8 @@ def connect():
     if not ipv4_pattern.match(host_ip):
         host_ip = deobfuscate_ip(host_ip)
 
-    # Construct the path to scct.py one directory back
-    scct_script_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'scct.py')
+    # # Construct the path to scct.py one directory back
+    scct_script_path = os.path.join(os.path.dirname(__file__), 'scct.py')
 
     args = [scct_script_path, 'client', '--remote', host_ip]
     # Start the script in a separate subprocess
