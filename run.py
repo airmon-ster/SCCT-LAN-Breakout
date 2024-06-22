@@ -85,6 +85,22 @@ def run_scct_script(args):
     global script_process
     script_process = subprocess.Popen([sys.executable] + args)
 
+# def run_scct_script(args):
+#     global script_process
+#     startupinfo = None
+
+#     if os.name == 'nt':  # Check if the OS is Windows
+#         # This will hide the console window on Windows
+#         startupinfo = subprocess.STARTUPINFO()
+#         startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+
+#     script_process = subprocess.Popen(
+#         [sys.executable] + args,
+#         stdout=subprocess.PIPE,
+#         stderr=subprocess.PIPE,
+#         startupinfo=startupinfo
+#     )
+
 # Routes
 @app.route('/')
 def index():

@@ -1,5 +1,6 @@
 from scapy.all import IP, UDP, Ether, sniff, sendp, Raw
 from dataclasses import dataclass, field
+import base64
 
 # SCCTP Protocol Structure Example
 # FIND_REQUEST
@@ -89,13 +90,18 @@ def parse_request_packet(pkt, client: Client) -> None:
     except Exception as e:
         print(f"Error in parse_request_packet: {repr(e)}")
 
+def obfuscate_ip(ip: str) -> str:
+    # Encode the IP address using Base64
+    encoded_ip = base64.urlsafe_b64encode(ip.encode())
+    return encoded_ip.decode()
+
 
 def build_client_banner(remote: str, broadcast: str) -> None:
     # Show the user the entered information in a text table
     print("\n---------------------")
     print("SCCTP Server Emulator")
     print("---------------------")
-    print(f"EXTERNAL_GAME_HOST_IP: {remote}")
+    print(f"EXTERNAL_GAME_HOST_ID: {obfuscate_ip(remote)}")
     print(f"LOCAL_BROADCAST_ADDRESS: {broadcast}")
     print("Listening for SCCTP packets...\n")
     return
