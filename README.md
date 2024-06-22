@@ -51,6 +51,7 @@ sudo python3 ./scct.py client --remote <external host's ip address> --broadcast 
 - Hopefully when you now search for a game in the LAN menu, you will see the game hosted by SCCTPS2
 - Join game and hope that host has the UDP port 3658 forwarded correctly to their PS2's internal IP address
   
-![image](https://github.com/airmon-ster/SCCT-LAN-Breakout/assets/31023869/ed9cc908-bb97-4cc4-85e4-9d9aa60f4715)
+![image](https://github.com/airmon-ster/SCCT-LAN-Breakout/assets/31023869/c67af4b4-6001-46c5-925c-ac269feeda86)
+
 ### Test
 Test server is currently up at testserver.scct.airmon-ster.com. Later efforts will auto-healthcheck this and report appropriately.
