@@ -171,7 +171,7 @@ def connect():
     host_ip = data.get('host_ip')
     ipv4_pattern = re.compile(r'^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
     # count = 0
-    if not ipv4_pattern.match(host_ip) and not '.' in item:
+    if not ipv4_pattern.match(host_ip) and not '.' in host_ip:
         host_ip = deobfuscate_ip(host_ip)
 
     # # Construct the path to scct.py one directory back
