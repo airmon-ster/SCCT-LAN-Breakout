@@ -148,8 +148,9 @@ def run_server():
     ps2_ip = data.get('ps2_ip')
     players = data.get('players')
     ipv4_pattern = re.compile(r'^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
+    
     for idx, item in enumerate(players):
-        if not ipv4_pattern.match(item):
+        if not ipv4_pattern.match(item) and not '.' in item:
             players[idx] = deobfuscate_ip(item)
 
     # Construct the path to scct.py one directory back
@@ -170,7 +171,7 @@ def connect():
     host_ip = data.get('host_ip')
     ipv4_pattern = re.compile(r'^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
     # count = 0
-    if not ipv4_pattern.match(host_ip):
+    if not ipv4_pattern.match(host_ip) and not '.' in item:
         host_ip = deobfuscate_ip(host_ip)
 
     # # Construct the path to scct.py one directory back
