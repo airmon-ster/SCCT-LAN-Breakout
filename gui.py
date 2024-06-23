@@ -205,7 +205,7 @@ if __name__ == '__main__':
     # ADD SPLASH SCREEN?
 
     # Run Apped Chrome Window
-    run_with_switches()
+    # run_with_switches()
 
     # if WORKSAFE == False:
     #     http_server = WSGIServer(("127.0.0.1", 8000), app)
