@@ -1,6 +1,7 @@
 from dataclasses import field, dataclass
 from time import sleep
 from scapy.all import IP, UDP, Ether, sendp, Raw
+import websockets
 import validators
 from socket import gethostbyname
 from upnpy import exceptions
@@ -23,6 +24,24 @@ class Server:
     local_ps2: str
     players: list[str]
     ports: list[int] = field(default_factory=lambda: [10070, 10071, 10072, 10073, 10074, 10075])
+
+    async def hole_punch_fw_v2(self) -> None:
+        try:
+            signal_server = gethostbyname('testserver.scct.airmon-ster.com')
+            print("Connected to the signal_server. Waiting for clients to connect.")
+            async for websocket in websockets.connect(f"ws://{signal_server}:8765", ping_interval=None):
+                try:
+                    while True:
+                        punch_port = str(await websocket.recv())
+                        print(f"Received port to hole-punch: {punch_port}")
+                        pkt = Ether()/IP(dst=signal_server, src=self.local_ps2)/UDP(sport=3658, dport=int(punch_port))/Raw()
+                        pkt[Raw].load = SERVER_TO_CLIENT_KEEP_ALIVE
+                        sendp(pkt, verbose=0)
+                        print(f"Sent keep alive packet to {signal_server} on port {punch_port}")
+                except websockets.ConnectionClosed:
+                    continue
+        except Exception as e:
+            print(f"Error in hole_punch_fw_v2: {repr(e)}")
 
     def hole_punch_fw(self) -> None:
         try:
