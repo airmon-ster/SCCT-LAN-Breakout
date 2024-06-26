@@ -15,10 +15,10 @@ class Redirector:
     websocket: websockets.sync.server.ServerConnection = None
 
     def serve(self) -> None:
-        print("Starting websocket server")
+        print("Starting websocket server...")
         try:
             with websockets.sync.server.serve(self.handler, "0.0.0.0", 8765) as server:
-                print("Websocket server started")
+                print("Websocket server started...")
                 server.serve_forever()
 
         except Exception as e:
@@ -88,6 +88,7 @@ class Raw_listener:
         try:
             while True:
                 sleep(15)
+                print("Refreshing ports...")
                 self.punch_ports.clear()
                 if stop():
                     print(f"Stopping {t} thread...")

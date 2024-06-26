@@ -8,10 +8,7 @@ from upnpy import exceptions
 import upnpy
 import base64
 
-# UDP 100171 keep alive packet. Host sends this to client
-# mac - 0008a20c0c9600041f82a8fc0800
-# ip - 45000025e8ad000040118229c0a80a46261b1ee8 - identification field increments by 1 for each packet. This also changes the checksum
-# udp - 27570e4a0011c611
+# UDP 100171 keep alive packet. Host sends this to client to keep the connection alive.
 # ka_header - 0700
 # 4f4ceb2d47ad
 # ka_trailer - 6b000000000000000000
@@ -27,7 +24,7 @@ class Server:
 
     async def hole_punch_fw_v2(self) -> None:
         try:
-            signal_server = gethostbyname('testserver.scct.airmon-ster.com')
+            signal_server = gethostbyname(self.players[0])
             print("Connected to the signal_server. Waiting for clients to connect.")
             async for websocket in websockets.connect(f"ws://{signal_server}:8765", ping_interval=None):
                 try:
