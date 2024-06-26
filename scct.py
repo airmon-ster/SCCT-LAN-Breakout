@@ -18,6 +18,7 @@ def main() -> None:
         parser.add_argument('--players', type=str, help='Space separated hostnames or IPs of the players joining the game', nargs='+')
         parser.add_argument('--upnp', action=argparse.BooleanOptionalAction, help='Attempt to use UPnP to open a port on the router')
         parser.add_argument('--hpv2', action=argparse.BooleanOptionalAction, help='Test the hole punch v2 method')
+        parser.add_argument('--timeout', type=int, help='The timeout for the hole punch method', default=30)
         args: argparse.Namespace = parser.parse_args()
 
         if args.action == 'client':
@@ -32,9 +33,7 @@ def main() -> None:
             if not validate_server_parameters(args=args):
                 return
 
-            local_ps2 = args.sip
-            players = args.players
-            server = Server(local_ps2=local_ps2, players=players)
+            server = Server(local_ps2=args.sip, players=args.players, timeout=args.timeout)
             if args.upnp:
                 server.attempt_upnp()
             if not args.hpv2:

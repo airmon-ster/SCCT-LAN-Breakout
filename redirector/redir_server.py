@@ -52,7 +52,7 @@ class Redirector:
 
 @dataclass
 class Raw_listener:
-    punch_ports: list[int] = field(default_factory=lambda: [10070, 10071, 10072, 10073, 10074, 10075])
+    punch_ports: list[int] = field(default_factory=lambda: [10070, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079, 10080])
 
     def listen(self, t, stop):
         print("Starting listener...")

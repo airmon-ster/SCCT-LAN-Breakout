@@ -20,6 +20,7 @@ SERVER_TO_CLIENT_KEEP_ALIVE = b'\x07\x00\x4f\x4c\xeb\x2d\x47\xad\x6b\x00\x00\x00
 class Server:
     local_ps2: str
     players: list[str]
+    timeout: int = field(default=30)
     ports: list[int] = field(default_factory=lambda: [10070, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079, 10080])
 
     async def hole_punch_fw_v2(self) -> None:
@@ -36,7 +37,7 @@ class Server:
                         sendp(pkt, verbose=0)
                         print(f"Sent keep alive packet to {signal_server} on port {punch_port}")
                 except websockets.ConnectionClosed:
-                    continue
+                    print("Connection Closed. Reconnecting...")
         except Exception as e:
             print(f"Error in hole_punch_fw_v2: {repr(e)}")
 
@@ -106,6 +107,8 @@ def build_server_banner(server: Server) -> None:
     print("SCCTP FW Hole Puncher")
     print("---------------------")
     print(f"Local PS2: {server.local_ps2}")
+    if server.timeout:
+        print(f"Timeout: {server.timeout}")
     print("Players:")
     for player in server.players:
         print(f"  {obfuscate_ip(player)}")
