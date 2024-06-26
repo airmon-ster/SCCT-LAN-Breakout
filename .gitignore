@@ -9,3 +9,4 @@ test.py
 venv/
 dist/
 *.zip
+.DS_Store

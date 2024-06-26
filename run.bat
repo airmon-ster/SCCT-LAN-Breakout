@@ -27,14 +27,20 @@ if %errorlevel% == 0 (
     )
 )
 
+REM Set the working directory to the location of the batch file
+cd /d %~dp0
+
 REM Launch Microsoft Edge with specified parameters
 echo Launching Microsoft Edge...
 start msedge --disable-pinch --guest --disable-extensions --app=http://127.0.0.1:8000
 
 REM Install Python Dependencies and Run Python script gui.py
 echo checking Python dependencies...
-python -m pip install -r requirements.txt
+python -m pip install -r %~dp0requirements.txt
+
+echo Current directory is: %cd%
 echo Running Python script gui.py...
-python gui.py
+python %~dp0gui.py
 
-
+@REM REM Create a Desktop Shortcut
+@REM powershell -Command "$WScriptShell = New-Object -ComObject WScript.Shell; $Shortcut = $WScriptShell.CreateShortcut('%UserProfile%\Desktop\Run Script.lnk'); $Shortcut.TargetPath = '%~dp0run.bat'; $Shortcut.WorkingDirectory = '%~dp0'; $Shortcut.Save()"
