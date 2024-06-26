@@ -33,7 +33,7 @@ class Server:
                         punch_port = str(await websocket.recv())
                         print(f"Received port to hole-punch: {punch_port}")
                         pkt = Ether()/IP(dst=signal_server, src=self.local_ps2)/UDP(sport=3658, dport=int(punch_port))/Raw()
-                        pkt[Raw].load = SERVER_TO_CLIENT_KEEP_ALIVE
+                        # pkt[Raw].load = SERVER_TO_CLIENT_KEEP_ALIVE
                         sendp(pkt, verbose=0)
                         print(f"Sent keep alive packet to {signal_server} on port {punch_port}")
                 except websockets.ConnectionClosed:
