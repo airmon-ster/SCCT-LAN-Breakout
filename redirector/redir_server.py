@@ -77,6 +77,7 @@ class Raw_listener:
             if sport in self.punch_ports:
                 return
 
+            print(f"Received packet: {pkt.summary()}")
             g_websocket.send(sport)
             self.punch_ports.append(sport)
         except websockets.ConnectionClosed:

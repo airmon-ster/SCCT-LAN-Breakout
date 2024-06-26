@@ -20,7 +20,7 @@ SERVER_TO_CLIENT_KEEP_ALIVE = b'\x07\x00\x4f\x4c\xeb\x2d\x47\xad\x6b\x00\x00\x00
 class Server:
     local_ps2: str
     players: list[str]
-    ports: list[int] = field(default_factory=lambda: [10070, 10071, 10072, 10073, 10074, 10075])
+    ports: list[int] = field(default_factory=lambda: [10070, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079, 10080])
 
     async def hole_punch_fw_v2(self) -> None:
         try:
