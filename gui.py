@@ -10,6 +10,7 @@ from flask import Flask, render_template_string, request, jsonify
 import requests
 import base64
 import re
+import platform
 
 # WORKSAFE=False
 # try:
@@ -18,31 +19,75 @@ import re
 #     print(e)
 #     WORKSAFE=True
 
+def get_platform_type():
+    system = platform.system()
+    return system
 
-def run_with_switches():
+
+def run_with_switches(system):
     # Check the default browser
-    if os.path.exists("C:/Program Files/Google/Chrome/Application/chrome.exe"):
-        command = [
-            "C:/Program Files/Google/Chrome/Application/chrome.exe",
-            '--app=http://127.0.0.1:8000',
-            '--disable-pinch',
-            '--disable-extensions',
-            '--guest'
-        ]
+    if system == 'Darwin':
+        # Path for Google Chrome on macOS
+        chrome_path = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+        if os.path.exists(chrome_path):
+            command = [
+                chrome_path,
+                '--app=http://127.0.0.1:8000',
+                '--disable-pinch',
+                '--disable-extensions',
+                '--guest'
+            ]
         print("Running command:", command)
         subprocess.Popen(command)
         return
-    elif os.path.exists("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"):
-        command = [
-            "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
-            '--app=http://127.0.0.1:8000',
-            '--disable-pinch',
-            '--disable-extensions',
-            '--guest'
-        ]
+    elif system == 'Linux':
+      # Typical command for launching Google Chrome on Linux
+        chrome_path = '/usr/bin/google-chrome'
+        if os.path.exists(chrome_path):
+            command = [
+                chrome_path,
+                '--app=http://127.0.0.1:8000',
+                '--disable-pinch',
+                '--disable-extensions',
+                '--guest'
+            ]
+        else:
+            # Fallback to chromium if google-chrome is not installed
+            chromium_path = '/usr/bin/chromium-browser'
+            if os.path.exists(chromium_path):
+                command = [
+                    chromium_path,
+                    '--app=http://127.0.0.1:8000',
+                    '--disable-pinch',
+                    '--disable-extensions',
+                    '--guest'
+                ]
         print("Running command:", command)
         subprocess.Popen(command)
         return
+    else:
+        if os.path.exists("C:/Program Files/Google/Chrome/Application/chrome.exe"):
+            command = [
+                "C:/Program Files/Google/Chrome/Application/chrome.exe",
+                '--app=http://127.0.0.1:8000',
+                '--disable-pinch',
+                '--disable-extensions',
+                '--guest'
+            ]
+            print("Running command:", command)
+            subprocess.Popen(command)
+            return
+        elif os.path.exists("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"):
+            command = [
+                "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+                '--app=http://127.0.0.1:8000',
+                '--disable-pinch',
+                '--disable-extensions',
+                '--guest'
+            ]
+            print("Running command:", command)
+            subprocess.Popen(command)
+            return
 
     print("Chromium-based browser not found or default browser not set.")
 
@@ -205,8 +250,11 @@ if __name__ == '__main__':
 
     # ADD SPLASH SCREEN?
 
+    # Get current system type
+    system = get_platform_type()
+
     # Run Apped Chrome Window
-    # run_with_switches()
+    run_with_switches(system)
 
     # if WORKSAFE == False:
     #     http_server = WSGIServer(("127.0.0.1", 8000), app)
