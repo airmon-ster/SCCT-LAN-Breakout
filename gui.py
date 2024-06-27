@@ -251,7 +251,7 @@ if __name__ == '__main__':
     # ADD SPLASH SCREEN?
 
     # Get current system type
-    system = get_system_type()
+    system = get_platform_type()
 
     # Run Apped Chrome Window
     run_with_switches(system)

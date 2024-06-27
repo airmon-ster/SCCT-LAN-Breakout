@@ -6,7 +6,7 @@ echo "$curr_dir"
 if python3 --version &> /dev/null; then
     echo "Python3 is installed."
     py_version='python3'
-else if python --version &> /dev/null; then
+elif python --version &> /dev/null; then
     echo "Python is installed."
     py_version='python'
 else
