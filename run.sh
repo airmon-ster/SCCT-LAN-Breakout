@@ -14,6 +14,12 @@ else
     exit 1
 fi
 
+# Make install.sh executable if not already
+chmod +x "$curr_dir/install.sh"
+
+# Run install.sh
+echo "Running install.sh script..."
+"$curr_dir/install.sh"
 
 # # Launch default web browser with specified parameters
 # echo "Launching default web browser..."

@@ -1,4 +1,5 @@
 @echo off
+
 REM Check for Python installation
 python --version >nul 2>&1
 if %errorlevel% == 0 (
@@ -29,6 +30,10 @@ if %errorlevel% == 0 (
 
 REM Set the working directory to the location of the batch file
 cd /d %~dp0
+
+REM Call install.bat script from the same directory
+echo Running install.bat...
+call "%~dp0install.bat"
 
 @REM REM Launch Microsoft Edge with specified parameters
 @REM echo Launching Microsoft Edge...
