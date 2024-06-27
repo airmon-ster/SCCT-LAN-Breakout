@@ -85,12 +85,12 @@ if %errorlevel% == 0 (
 )
 
 REM Set the working directory to the location of the batch file
-cd /d %~dp0
+cd /d "%~dp0"
 
 REM Install Python Dependencies and Run Python script gui.py
 echo checking Python dependencies...
-python -m pip install -r %~dp0requirements.txt
+python -m pip install -r "%~dp0requirements.txt"
 
 echo Current directory is: %cd%
 echo Running Python script gui.py...
-python %~dp0gui.py
+python "%~dp0gui.py"
