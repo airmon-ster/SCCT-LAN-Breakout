@@ -30,9 +30,9 @@ if %errorlevel% == 0 (
 REM Set the working directory to the location of the batch file
 cd /d %~dp0
 
-REM Launch Microsoft Edge with specified parameters
-echo Launching Microsoft Edge...
-start msedge --disable-pinch --guest --disable-extensions --app=http://127.0.0.1:8000
+@REM REM Launch Microsoft Edge with specified parameters
+@REM echo Launching Microsoft Edge...
+@REM start msedge --disable-pinch --guest --disable-extensions --app=http://127.0.0.1:8000
 
 REM Install Python Dependencies and Run Python script gui.py
 echo checking Python dependencies...
