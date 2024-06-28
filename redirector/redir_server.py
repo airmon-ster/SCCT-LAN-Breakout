@@ -58,8 +58,9 @@ class Raw_listener:
         print("Starting listener...")
         try:
             while True:
+                # This will restart every 10 seconds looking to see if it should stop
                 sniff(lfilter=lambda x: x.haslayer(UDP) and x[UDP].dport == 3658,
-                      prn=lambda x: self.send_packet(x), count=100)
+                      prn=lambda x: self.send_packet(x), timeout=10)
                 if stop():
                     print(f"Stopping {t} thread...")
                     break

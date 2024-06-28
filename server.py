@@ -1,5 +1,4 @@
 from dataclasses import field, dataclass
-from time import sleep
 from scapy.all import IP, UDP, Ether, sendp, Raw
 import websockets
 import validators
@@ -8,54 +7,40 @@ from upnpy import exceptions
 import upnpy
 import base64
 
-# UDP 100171 keep alive packet. Host sends this to client to keep the connection alive.
-# ka_header - 0700
-# 4f4ceb2d47ad
-# ka_trailer - 6b000000000000000000
 
-SERVER_TO_CLIENT_KEEP_ALIVE = b'\x07\x00\x4f\x4c\xeb\x2d\x47\xad\x6b\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+TEST_KEEP_ALIVE = b'\xff' * 1200
+
+# TEST_KEEP_ALIVE needs to be blocked on the signal server firewall so it doesnt ever reach the gamer
+# iptables -t raw -A PREROUTING -p udp --sport 3658 -m length --length 1100:1300 -j DROP
+
+# Gamer traffic needs to pass through the signal server to the game host
+# iptables -t nat -I PREROUTING 1 -p udp --dport 3658 -j DNAT --to-destination <host external ip>
+# iptables -t nat -A POSTROUTING -p udp --dport 3658 -j MASQUERADE
 
 
 @dataclass
 class Server:
     local_ps2: str
-    players: list[str]
+    signal: str
     timeout: int = field(default=30)
     ports: list[int] = field(default_factory=lambda: [10070, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079, 10080])
 
-    async def hole_punch_fw_v2(self) -> None:
+    async def hole_punch_fw(self) -> None:
         try:
-            signal_server = gethostbyname(self.players[0])
-            print("Connected to the signal_server. Waiting for clients to connect.")
-            async for websocket in websockets.connect(f"ws://{signal_server}:8765", ping_interval=None):
+            if validators.domain(self.signal):
+                self.signal = gethostbyname(self.signal)
+            print("Connected to the self.signal. Waiting for clients to connect.")
+            async for websocket in websockets.connect(f"ws://{self.signal}:8765", ping_interval=None):
                 try:
                     while True:
                         punch_port = str(await websocket.recv())
                         print(f"Received port to hole-punch: {punch_port}")
-                        pkt = Ether()/IP(dst=signal_server, src=self.local_ps2)/UDP(sport=3658, dport=int(punch_port))/Raw()
-                        # pkt[Raw].load = SERVER_TO_CLIENT_KEEP_ALIVE
+                        pkt = Ether()/IP(dst=self.signal, src=self.local_ps2)/UDP(sport=3658, dport=int(punch_port))/Raw()
+                        pkt[Raw].load = TEST_KEEP_ALIVE
                         sendp(pkt, verbose=0)
-                        print(f"Sent keep alive packet to {signal_server} on port {punch_port}")
+                        print(f"Sent keep alive packet to {self.signal} on port {punch_port}")
                 except websockets.ConnectionClosed:
                     print("Connection Closed. Reconnecting...")
-        except Exception as e:
-            print(f"Error in hole_punch_fw_v2: {repr(e)}")
-
-    def hole_punch_fw(self) -> None:
-        try:
-            while True:
-                # Build a scapy packet with the PS2 MAC address and IP address and send it to the players ip addresses to open a hole in server firewall
-                for player in self.players:
-                    if validators.domain(player):
-                        player = gethostbyname(player)
-                    for port in self.ports:
-                        pkt = Ether()/IP(dst=player, src=self.local_ps2)/UDP(sport=3658, dport=port)/Raw()
-                        pkt[Raw].load = SERVER_TO_CLIENT_KEEP_ALIVE
-                        sendp(pkt, verbose=0)
-                        print(f"Sent keep alive packet to {player} on port {port}")
-                print("Sent keep alive packets to all players. Sleeping for 15 seconds.")
-                sleep(15)
-
         except Exception as e:
             print(f"Error in hole_punch_fw: {repr(e)}")
 
@@ -109,7 +94,5 @@ def build_server_banner(server: Server) -> None:
     print(f"Local PS2: {server.local_ps2}")
     if server.timeout:
         print(f"Timeout: {server.timeout}")
-    print("Players:")
-    for player in server.players:
-        print(f"  {obfuscate_ip(player)}")
+    print(f"Signal Server: {server.signal}")
     print("---------------------")

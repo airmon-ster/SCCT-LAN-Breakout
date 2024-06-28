@@ -36,6 +36,7 @@ COMMON_LOCAL_NETWORK_BC: list = ['192.168.0.255', '192.168.1.255']
 class Client:
     remote: str
     broadcast: list[str]
+    timeout: int = field(default=100)
     res_action: bytes = field(default=RES_ACTION)
     res_trailer: bytes = field(default=RES_TRAILER)
     player_host: bytes = field(default=PLAYER_HOST)
@@ -45,7 +46,7 @@ class Client:
         try:
             sniff(lfilter=lambda x: x.haslayer(UDP) and x[UDP].sport == 1001 and x[Ether].dst == 'ff:ff:ff:ff:ff:ff' and len(x) == 70,
                   prn=lambda x: parse_request_packet(x, client=self),
-                  count=100)
+                  count=self.timeout)
         except Exception as e:
             print(f"Error in listen: {repr(e)}")
 

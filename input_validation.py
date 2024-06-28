@@ -4,12 +4,11 @@ from ipaddress import ip_address
 import argparse
 
 
-def validate_players(players: list[str]) -> bool:
+def validate_players(signal: str) -> bool:
     try:
-        for player in players:
-            if domain(player):
-                player = gethostbyname(player)
-            ip_address(player)
+        if domain(signal):
+            signal = gethostbyname(signal)
+        ip_address(signal)
         return True
 
     except Exception as e:
@@ -19,15 +18,15 @@ def validate_players(players: list[str]) -> bool:
 
 def validate_server_parameters(args: argparse.Namespace) -> bool:
     try:
-        if not args.sip:
+        if not args.ps:
             print("You must specify the source IP address of the host's PS2.")
             return False
 
-        if not args.players:
-            print("You must specify the players joining the game. Example: --players airmonster.com 1.1.1.1 player.duckdns.com")
+        if not args.signal:
+            print("You must specify the signal server. Example: --signal testserver.scct.airmon-ster.com")
             return False
 
-        if not validate_players(players=args.players):
+        if not validate_players(signal=args.signal):
             return False
         return True
 
