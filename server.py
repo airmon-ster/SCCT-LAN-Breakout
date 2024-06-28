@@ -29,7 +29,7 @@ class Server:
         try:
             if validators.domain(self.signal):
                 self.signal = gethostbyname(self.signal)
-            print("Connected to the self.signal. Waiting for clients to connect.")
+            print(f"Connected to the signal server: {self.signal}. Waiting for clients to connect.")
             async for websocket in websockets.connect(f"ws://{self.signal}:8765", ping_interval=None):
                 try:
                     while True:

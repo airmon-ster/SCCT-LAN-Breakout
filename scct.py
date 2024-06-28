@@ -17,7 +17,7 @@ def main() -> None:
         parser.add_argument('--ps', type=str, help='The source IP address of the host\'s ps2')
         parser.add_argument('--signal', type=str, help='Space separated hostnames or IPs of the players joining the game')
         parser.add_argument('--upnp', action=argparse.BooleanOptionalAction, help='Attempt to use UPnP to open a port on the router')
-        parser.add_argument('--timeout', type=int, help='The timeout for the hole punch method', default=30)
+        parser.add_argument('--timeout', type=int, help='The timeout for the server hole punch method keep alives or client fake room generation', default=30)
         args: argparse.Namespace = parser.parse_args()
 
         if args.action == 'client':
