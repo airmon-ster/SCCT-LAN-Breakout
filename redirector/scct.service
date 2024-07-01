@@ -1,0 +1,14 @@
+# SCCT Service. cp scct.service
+[Unit]
+Description=SCCT Holepunch Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/ubuntu/server/redir_server.py
+Type=simple
+WorkingDirectory=/home/ubuntu/server
+Restart=always
+
+[Install]
+WantedBy=default.target
+RequiredBy=network.target
