@@ -223,7 +223,7 @@ def run_server():
     scct_script_path = os.path.join(os.path.dirname(__file__), 'scct.py')
 
     # args = [scct_script_path, 'server', '--sip', ps2_ip, '--players'] + players
-    args = [scct_script_path, 'server', '--ps', ps2_ip, '--signal', 'testserver.scct.airmon-ster.com', '--timeout', 20]
+    args = [scct_script_path, 'server', '--ps', ps2_ip, '--signal', 'testserver.scct.airmon-ster.com', '--timeout', '20']
     # Start the script in a separate subprocess
     run_scct_script(args)
 
