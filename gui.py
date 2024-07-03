@@ -5,12 +5,13 @@
 import subprocess
 import os
 import sys
-from flask import Flask, render_template_string, request, jsonify
+from flask import Flask, render_template_string, request, jsonify, render_template, redirect
 # import numpy as np
 import requests
 import base64
 import re
 import platform
+from flask_cors import CORS
 
 # WORKSAFE=False
 # try:
@@ -32,7 +33,7 @@ def run_with_switches(system):
         if os.path.exists(chrome_path):
             command = [
                 chrome_path,
-                '--app=http://127.0.0.1:8000',
+                '--app=http://127.0.0.1:8001/scops',
                 '--disable-pinch',
                 '--disable-extensions',
                 '--guest'
@@ -46,7 +47,7 @@ def run_with_switches(system):
         if os.path.exists(chrome_path):
             command = [
                 chrome_path,
-                '--app=http://127.0.0.1:8000',
+                '--app=http://127.0.0.1:8001/scops',
                 '--disable-pinch',
                 '--disable-extensions',
                 '--guest'
@@ -57,7 +58,7 @@ def run_with_switches(system):
             if os.path.exists(chromium_path):
                 command = [
                     chromium_path,
-                    '--app=http://127.0.0.1:8000',
+                    '--app=http://127.0.0.1:8001/scops',
                     '--disable-pinch',
                     '--disable-extensions',
                     '--guest'
@@ -69,7 +70,7 @@ def run_with_switches(system):
         if os.path.exists("C:/Program Files/Google/Chrome/Application/chrome.exe"):
             command = [
                 "C:/Program Files/Google/Chrome/Application/chrome.exe",
-                '--app=http://127.0.0.1:8000',
+                '--app=http://127.0.0.1:8001/scops',
                 '--disable-pinch',
                 '--disable-extensions',
                 '--guest'
@@ -80,7 +81,7 @@ def run_with_switches(system):
         elif os.path.exists("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"):
             command = [
                 "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
-                '--app=http://127.0.0.1:8000',
+                '--app=http://127.0.0.1:8001/scops',
                 '--disable-pinch',
                 '--disable-extensions',
                 '--guest'
@@ -113,6 +114,13 @@ def stop_previous_flask_server():
 
 
 app = Flask(__name__)
+
+# Enable CORS with specific configurations
+CORS(app, resources={
+    r"/api/*": {
+        "origins": ["http://127.0.0.1:8000","https://www.splintercellonline.net"]#"http://www.splintercellonline.net",
+    },
+})
 
 # getting the name of the directory
 # where the this file is present.
@@ -149,16 +157,26 @@ def index():
     html = """
 
     """
+    # Retrieve data from query parameters
+    data = {
+        'username': request.args.get('username'),
+        'discord_id': request.args.get('discord_id'),
+        'avatar': request.args.get('avatar'),
+        'role': request.args.get('role'),
+        'email': request.args.get('email'),
+        'status': request.args.get('status'),
+        'reason': request.args.get('reason')
+    }
 
-    file_path = f'{os.path.dirname(os.path.realpath(__file__))}/templates/index.html'
+    # file_path = f'{os.path.dirname(os.path.realpath(__file__))}/templates/index.html'
 
-    with open(file_path, 'r') as file:
-        html = ''
-        for line in file:
-            html += line
+    # with open(file_path, 'r') as file:
+    #     html = ''
+    #     for line in file:
+    #         html += line
 
-        return render_template_string(html)
-        # return render('index.html')
+    #     return render_template_string(html)
+    return render_template('index.html', data=data)
 
 
 def obfuscate_ip(ip: str) -> str:
@@ -172,6 +190,9 @@ def deobfuscate_ip(obfuscated_ip: str) -> str:
     decoded_ip = base64.urlsafe_b64decode(obfuscated_ip.encode())
     return decoded_ip.decode()
 
+@app.route('/scops')
+def scops():
+    return redirect('https://www.splintercellonline.net/')
 
 @app.route('/api/get_id', methods=['GET'])
 def get_id():
@@ -201,7 +222,8 @@ def run_server():
     # Construct the path to scct.py one directory back
     scct_script_path = os.path.join(os.path.dirname(__file__), 'scct.py')
 
-    args = [scct_script_path, 'server', '--sip', ps2_ip, '--players'] + players
+    # args = [scct_script_path, 'server', '--sip', ps2_ip, '--players'] + players
+    args = [scct_script_path, 'server', '--ps', ps2_ip, '--signal', 'testserver.scct.airmon-ster.com', '--timeout', 20]
     # Start the script in a separate subprocess
     run_scct_script(args)
 
@@ -240,6 +262,10 @@ def end_connection():
     else:
         return jsonify({'status': 'not running'}), 400
 
+@app.route('/api/check_localhost_app', methods=['GET'])
+def check_localhost_app():
+    return jsonify({'status': 'success'})
+
 
 if __name__ == '__main__':
     stop_previous_flask_server()
@@ -260,4 +286,4 @@ if __name__ == '__main__':
     #     http_server = WSGIServer(("127.0.0.1", 8000), app)
     #     http_server.serve_forever()
     # else:
-    app.run(debug=True, threaded=True, port=8000, use_reloader=False)
+    app.run(debug=True, threaded=True, port=8001, use_reloader=False)
