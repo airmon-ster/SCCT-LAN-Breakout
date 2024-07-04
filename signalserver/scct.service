@@ -4,9 +4,9 @@ Description=SCCT Holepunch Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /home/ubuntu/server/redir_server.py
+ExecStart=/root/SCCT-LAN-Breakout/signalserver/.venv/bin/python /root/SCCT-LAN-Breakout/signalserver/signal_server.py
 Type=simple
-WorkingDirectory=/home/ubuntu/server
+WorkingDirectory=/root
 Restart=always
 
 [Install]
