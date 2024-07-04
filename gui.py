@@ -5,7 +5,7 @@
 import subprocess
 import os
 import sys
-from flask import Flask, render_template_string, request, jsonify, render_template, redirect
+from flask import Flask, request, jsonify, render_template, redirect
 # import numpy as np
 import requests
 import base64
@@ -19,6 +19,7 @@ from flask_cors import CORS
 # except Exception as e:
 #     print(e)
 #     WORKSAFE=True
+
 
 def get_platform_type():
     system = platform.system()
@@ -42,7 +43,7 @@ def run_with_switches(system):
         subprocess.Popen(command)
         return
     elif system == 'Linux':
-      # Typical command for launching Google Chrome on Linux
+        # Typical command for launching Google Chrome on Linux
         chrome_path = '/usr/bin/google-chrome'
         if os.path.exists(chrome_path):
             command = [
@@ -118,7 +119,7 @@ app = Flask(__name__)
 # Enable CORS with specific configurations
 CORS(app, resources={
     r"/api/*": {
-        "origins": ["http://127.0.0.1:8000","https://www.splintercellonline.net"]#"http://www.splintercellonline.net",
+        "origins": ["http://127.0.0.1:8000", "https://www.splintercellonline.net"]  # "http://www.splintercellonline.net",
     },
 })
 
@@ -154,9 +155,6 @@ def run_scct_script(args):
 # Routes
 @app.route('/')
 def index():
-    html = """
-
-    """
     # Retrieve data from query parameters
     data = {
         'username': request.args.get('username'),
@@ -190,9 +188,11 @@ def deobfuscate_ip(obfuscated_ip: str) -> str:
     decoded_ip = base64.urlsafe_b64decode(obfuscated_ip.encode())
     return decoded_ip.decode()
 
+
 @app.route('/scops')
 def scops():
     return redirect('https://www.splintercellonline.net/')
+
 
 @app.route('/api/get_id', methods=['GET'])
 def get_id():
@@ -261,6 +261,7 @@ def end_connection():
         return jsonify({'status': 'stopped'})
     else:
         return jsonify({'status': 'not running'}), 400
+
 
 @app.route('/api/check_localhost_app', methods=['GET'])
 def check_localhost_app():

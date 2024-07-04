@@ -3,8 +3,6 @@ from scapy.all import IP, UDP, Ether, sendp, Raw
 import websockets
 import validators
 from socket import gethostbyname
-from upnpy import exceptions
-import upnpy
 import base64
 
 
@@ -22,7 +20,7 @@ TEST_KEEP_ALIVE = b'\xff' * 1200
 class Server:
     local_ps2: str
     signal: str
-    timeout: int = field(default=30)
+    timeout: int = field(default=20)
     ports: list[int] = field(default_factory=lambda: [10070, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079, 10080])
 
     async def hole_punch_fw(self) -> None:
@@ -43,38 +41,6 @@ class Server:
                     print("Connection Closed. Reconnecting...")
         except Exception as e:
             print(f"Error in hole_punch_fw: {repr(e)}")
-
-    def attempt_upnp(self) -> None:
-        try:
-            print("Attempting UPnP...")
-            upnp = upnpy.UPnP()
-            upnp.discover()
-            if device := upnp.get_igd():
-                print(f"Found UPnP gateway device: {device}")
-                services = device.get_services()
-                for service in services:
-                    for action in service.get_actions():
-                        if action.name == 'AddPortMapping':
-                            service.AddPortMapping(
-                                NewRemoteHost='',
-                                NewExternalPort=3658,
-                                NewProtocol='UDP',
-                                NewInternalPort=3658,
-                                NewInternalClient=self.local_ps2,
-                                NewEnabled=1,
-                                NewPortMappingDescription='SCCTMapping',
-                                NewLeaseDuration=0
-                            )
-        except exceptions.IGDError as e:
-            print(f"Error in attempt_upnp finding gateway device: {repr(e)}")
-            print("Continuing without UPnP.")
-        except exceptions.SOAPError as se:
-            print(f"Error in attempt_upnp while attempting to AddPortMapping: {repr(se)}")
-            print(("Your UPnP server may not allow a remote device to make a rule for your PS2,"
-                   " but we tried anyway. (miniupnp secure_mode=1)"))
-            print("Continuing without UPnP.")
-        except Exception as e:
-            print(f"Error in attempt_upnp: {repr(e)}")
 
     def __post_init__(self) -> None:
         build_server_banner(self)
