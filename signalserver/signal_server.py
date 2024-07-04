@@ -6,13 +6,13 @@ from scapy.all import UDP, sniff
 from dataclasses import dataclass, field
 
 
-g_websocket: websockets.sync.server.ServerConnection = None
+g_websocket: websockets.sync.server.ServerConnection | None = None
 g_stop_threads: bool = False
 
 
 @dataclass
 class Redirector:
-    websocket: websockets.sync.server.ServerConnection = None
+    websocket: websockets.sync.server.ServerConnection | None = None
 
     def serve(self) -> None:
         print("Starting websocket server...")

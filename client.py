@@ -96,7 +96,7 @@ def obfuscate_ip(ip: str) -> str:
     return encoded_ip.decode()
 
 
-def build_client_banner(remote: str) -> None:
+def build_client_banner(remote: SimpleNamespace) -> None:
     # Show the user the entered information in a text table
     print("\n---------------------")
     print("SCCTP Server Emulator")
