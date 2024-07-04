@@ -1,7 +1,6 @@
 from types import SimpleNamespace
 from scapy.all import IP, UDP, Ether, sniff, sendp, Raw
 from dataclasses import dataclass, field
-from validators import domain
 import base64
 
 # SCCTP Protocol Structure Example

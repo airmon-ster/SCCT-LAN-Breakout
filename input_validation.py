@@ -5,7 +5,6 @@ from ipaddress import ip_address
 import argparse
 
 
-
 def validate_signal_ips(signal: str, ps: str) -> bool:
     try:
         for ip in [signal, ps]:
