@@ -1,0 +1,4 @@
+scapy==2.5.0
+websockets==12.0
+asyncio==3.4.3
+validators==0.28.3
