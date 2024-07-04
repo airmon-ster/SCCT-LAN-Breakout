@@ -1,5 +1,7 @@
+from types import SimpleNamespace
 from scapy.all import IP, UDP, Ether, sniff, sendp, Raw
 from dataclasses import dataclass, field
+from validators import domain
 import base64
 
 # SCCTP Protocol Structure Example
@@ -33,7 +35,7 @@ GAME_INFO: bytes = (b'\xff\xff\xff\xff\x04\x00\x00\x00\x01\x00\x00\x00\x0a\x00\x
 
 @dataclass
 class Client:
-    remote: str
+    remote: SimpleNamespace
     res_action: bytes = field(default=RES_ACTION)
     res_trailer: bytes = field(default=RES_TRAILER)
     player_host: bytes = field(default=PLAYER_HOST)
@@ -55,7 +57,7 @@ def send_response_packet(preamble: bytes, postamble: bytes, client: Client, broa
     try:
         # create the response packet with a dest of x.x.x.x and a source of the external game host ip
         # set the broadcast address to the common local network broadcast addresseses if LOCAL_BROADCAST_ADDRESS is not set
-        res_pkt = Ether(dst='ff:ff:ff:ff:ff:ff')/IP(dst=broadcast_addr, src=client.remote)/UDP(sport=1001, dport=1001)/Raw()
+        res_pkt = Ether(dst='ff:ff:ff:ff:ff:ff')/IP(dst=broadcast_addr, src=client.remote.ip)/UDP(sport=1001, dport=1001)/Raw()
         # poplate the load with the response fields via offsets
         new_payload = client.res_action + preamble + client.game_info + postamble + client.res_trailer
         res_pkt[Raw].load = new_payload
@@ -100,6 +102,6 @@ def build_client_banner(remote: str) -> None:
     print("\n---------------------")
     print("SCCTP Server Emulator")
     print("---------------------")
-    print(f"EXTERNAL_GAME_HOST_ID: {obfuscate_ip(remote)}")
+    print(f"EXTERNAL_GAME_HOST_ID: {obfuscate_ip(remote.ip) if remote.domain is None else remote.domain}")
     print("Listening for SCCTP packets...\n")
     return
