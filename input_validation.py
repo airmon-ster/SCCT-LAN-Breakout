@@ -1,3 +1,4 @@
+from types import SimpleNamespace
 from validators import domain
 from socket import gethostbyname
 from ipaddress import ip_address
@@ -41,9 +42,16 @@ def validate_client_parameters(args: argparse.Namespace) -> bool:
         if not args.remote:
             print("You must specify the external host IP address.")
             return False
+
+        remote = SimpleNamespace()
         if domain(args.remote):
-            args.remote = gethostbyname(args.remote)
-        ip_address(args.remote)
+            remote.domain = args.remote
+            remote.ip = gethostbyname(args.remote)
+        else:
+            remote.domain = None
+            remote.ip = args.remote
+        ip_address(remote.ip)
+        args.remote = remote
 
         return True
     except Exception as e:
