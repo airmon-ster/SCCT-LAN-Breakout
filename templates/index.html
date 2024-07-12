@@ -163,7 +163,7 @@
                     <input type="text" class="grow font-bold" v-model="signal_server" />
                   </label>
 
-                  <button v-if="ps2_ip" @click="run_server"
+                  <button v-if="ps2_ip && signal_server" @click="run_server"
                     class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Host
                     Game
                   </button>
@@ -176,16 +176,16 @@
                 </div>
                 <div v-for="item in lobbies" class="sm:w-1/2 md:w-1/2">
                   <div v-if="item.host !== this.django_username" class="flex flex-row w-full justify-between p-2">
+                    <h1 class="text-xl font-medium pt-2 pl-2">[[ item.host_username ]]</h1>
                     <div class="flex flex-row">
-                      <h1 class="text-xl font-medium pt-2 pl-2">[[ item.host_username ]]</h1>
-                      <h1 v-if="item.player2" class="pt-2 pl-2 text-lg font-bold">(2/4)</h1>
-                      <h1 v-else-if="item.player3" class="pt-2 pl-2 text-lg font-bold">(3/4)</h1>
-                      <h1 v-else-if="item.player4" class="pt-2 pl-2 text-lg font-bold">(4/4)</h1>
-                      <h1 v-else class="pt-2 pl-2 text-lg font-bold">(1/4)</h1>
-                    </div>
-                    <button @click="connect(item.endpoint)"
+                      <h1 v-if="item.player2" class="pt-2 pr-2 text-xl font-medium">(2/4)</h1>
+                      <h1 v-else-if="item.player3" class="pt-2 pr-2 text-xl font-medium">(3/4)</h1>
+                      <h1 v-else-if="item.player4" class="pt-2 pr-2 text-xl font-medium">(4/4)</h1>
+                      <h1 v-else class="pt-2 pr-2 text-xl font-medium">(1/4)</h1>
+                      <button @click="connect(item.endpoint)"
                       class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100">Join Lobby
                     </button>
+                  </div>
                   </div>
                       <p v-if="item.player2" class="flex justify-content-start pl-4">[[ item.player2 ]]</p>
                       <p v-if="item.player3" class="flex justify-content-start pl-4">[[ item.player3 ]]</p>
@@ -199,7 +199,7 @@
 
                 <div class="flex flex-row justify-center m-2">
                   <button @click="end_connection()"
-                    class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Leave
+                    class="btn bg-base-300 stroke-base-300 text-base-500 w-full">Leave
                     Lobby
                   </button>
 
@@ -360,7 +360,7 @@
       },
       connect(endpoint) {
         this.connected = 'true';
-
+        this.connection = 'client';
         // create content for server arguments
         const content = {
           host_ip: endpoint,
@@ -396,6 +396,7 @@
               console.log('successful api call.');
               this.connected = 'false';
               this.connection = 'portforward';
+              this.get_lobbies();
             })
             .catch(error => {
               // handle error
@@ -408,14 +409,14 @@
               // handle success
               console.log('successful api call.');
               this.connected = 'false';
-
+              this.connection = 'portforward';
+              this.get_lobbies();
             })
             .catch(error => {
               // handle error
               console.log(error);
             })
         }
-        this.get_lobbies();
       },
       get_lobbies(){
         this.lobbies_temp = [];
