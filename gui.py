@@ -157,6 +157,7 @@ def run_scct_script(args):
 def index():
     # Retrieve data from query parameters
     data = {
+        'django_username': request.args.get('django_username'),
         'username': request.args.get('username'),
         'discord_id': request.args.get('discord_id'),
         'avatar': request.args.get('avatar'),
@@ -191,7 +192,7 @@ def deobfuscate_ip(obfuscated_ip: str) -> str:
 
 @app.route('/scops')
 def scops():
-    return redirect('https://www.splintercellonline.net/')
+    return redirect('https://www.splintercellonline.net/')#'http://127.0.0.1:8001')#'https://www.splintercellonline.net/')
 
 
 @app.route('/api/get_id', methods=['GET'])
@@ -212,18 +213,16 @@ def run_server():
     # Get the data from the request
     data = request.json  # for POST requests with data
     ps2_ip = data.get('ps2_ip')
-    players = data.get('players')
+    signal_server = data.get('signal_server')
+    if signal_server == '':
+        signal_server = 'game.scct.airmon-ster.com'
     ipv4_pattern = re.compile(r'^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
 
-    for idx, item in enumerate(players):
-        if not ipv4_pattern.match(item) and '.' not in item:
-            players[idx] = deobfuscate_ip(item)
 
     # Construct the path to scct.py one directory back
     scct_script_path = os.path.join(os.path.dirname(__file__), 'scct.py')
 
-    # args = [scct_script_path, 'server', '--sip', ps2_ip, '--players'] + players
-    args = [scct_script_path, 'server', '--ps', ps2_ip, '--signal', 'testserver.scct.airmon-ster.com', '--timeout', '20']
+    args = [scct_script_path, 'server', '--ps', ps2_ip, '--signal', signal_server, '--timeout', '20']
     # Start the script in a separate subprocess
     run_scct_script(args)
 

@@ -107,32 +107,21 @@
         <div class=" min-h-screen">
           <div style="text-align: center;">
             <center>
-              <div class="h-full">
-                <img class="mt-4 mask mask-squircle h-72 hover:-translate-y-2 ease-in-out transition"
-                  src="{{url_for('static', filename='scops2_rounded.png')}}" />
+              <div v-if="connected !== 'true' " class="h-full">
+                <!-- <img class="mt-4 mask mask-squircle h-72 hover:-translate-y-2 ease-in-out transition"
+                  src="{{url_for('static', filename='scops2_rounded.png')}}" /> -->
                 <br>
                 <!-- <button class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100">[[ message ]] </button> -->
                 <!-- <a class="text-lg font-bold">[[ message ]] </a>
                 <br>
                 <br>     -->
                 <!-- <div class="flex flex-col justify-center"> -->
-                <div class="flex flex-row justify-center p-2">
-                  <a class="text-lg">Your User ID: <b class="pt-1 pr-2">[[ user_id ]]</b></a>
-                  <!-- <b class="pt-1 pr-2">[[ user_id ]]</b> -->
-                  <a class="btn btn-sm" @click="copy_id(user_id)">
-                    <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960"
-                      width="24px">
-                      <path
-                        d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z" />
-                    </svg>
-                  </a>
-                </div>
                 <!-- </div> -->
 
                 <div class="flex flex-row justify-center m-2">
 
-                  <label v-if="connection == 'host' " class="text-black text-lg font-bold pt-2 pr-2">Host</label>
-                  <label v-else class="text-base-300 text-lg pt-2 pr-2">Host</label>
+                  <label v-if="connection == 'portforward' " class="text-black text-lg font-bold pt-2 pr-2">Port Forward</label>
+                  <label v-else class="text-base-300 text-lg pt-2 pr-2">Port Forward</label>
 
                   <label class="swap swap-flip">
 
@@ -140,76 +129,65 @@
                     <input type="checkbox" checked>
 
 
-                    <svg class="swap-on fill-current" @click="connection = 'client' " xmlns="http://www.w3.org/2000/svg"
+                    <svg class="swap-on fill-current" @click="connection = 'holepunch' " xmlns="http://www.w3.org/2000/svg"
                       width="48" height="48" viewBox="0 -960 960 960">
-                      <path
-                        d="M760-400v-260L560-800 360-660v60h-80v-100l280-200 280 200v300h-80ZM560-800Zm20 160h40v-40h-40v40Zm-80 0h40v-40h-40v40Zm80 80h40v-40h-40v40Zm-80 0h40v-40h-40v40ZM280-220l278 76 238-74q-5-9-14.5-15.5T760-240H558q-27 0-43-2t-33-8l-93-31 22-78 81 27q17 5 40 8t68 4q0-11-6.5-21T578-354l-234-86h-64v220ZM40-80v-440h304q7 0 14 1.5t13 3.5l235 87q33 12 53.5 42t20.5 66h80q50 0 85 33t35 87v40L560-60l-280-78v58H40Zm80-80h80v-280h-80v280Z" />
+                      <path xmlns="http://www.w3.org/2000/svg" d="M200-120q-33 0-56.5-23.5T120-200v-160q0-33 23.5-56.5T200-440h400v-160h80v160h80q33 0 56.5 23.5T840-360v160q0 33-23.5 56.5T760-120H200Zm0-80h560v-160H200v160Zm80-40q17 0 28.5-11.5T320-280q0-17-11.5-28.5T280-320q-17 0-28.5 11.5T240-280q0 17 11.5 28.5T280-240Zm140 0q17 0 28.5-11.5T460-280q0-17-11.5-28.5T420-320q-17 0-28.5 11.5T380-280q0 17 11.5 28.5T420-240Zm140 0q17 0 28.5-11.5T600-280q0-17-11.5-28.5T560-320q-17 0-28.5 11.5T520-280q0 17 11.5 28.5T560-240Zm10-390-58-58q26-24 58-38t70-14q38 0 70 14t58 38l-58 58q-14-14-31.5-22t-38.5-8q-21 0-38.5 8T570-630ZM470-730l-56-56q44-44 102-69t124-25q66 0 124 25t102 69l-56 56q-33-33-76.5-51.5T640-800q-50 0-93.5 18.5T470-730ZM200-200v-160 160Z"/>
                     </svg>
-                    <!-- volume off icon -->
-                    <!-- <svg class="swap-off fill-current" @click="connection = 'client' " xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path d="M3,9H7L12,4V20L7,15H3V9M16.59,12L14,9.41L15.41,8L18,10.59L20.59,8L22,9.41L19.41,12L22,14.59L20.59,16L18,13.41L15.41,16L14,14.59L16.59,12Z"/></svg> -->
-                    <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg " @click="connection = 'host' "
+                    <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg " @click="connection = 'portforward' "
                       height="48" viewBox="0 -960 960 960" width="48" fill="#e8eaed">
-                      <path
-                        d="M182-200q-51 0-79-35.5T82-322l42-300q9-60 53.5-99T282-760h396q60 0 104.5 39t53.5 99l42 300q7 51-21 86.5T778-200q-21 0-39-7.5T706-230l-90-90H344l-90 90q-15 15-33 22.5t-39 7.5Zm16-86 114-114h336l114 114q2 2 16 6 11 0 17.5-6.5T800-304l-44-308q-4-29-26-48.5T678-680H282q-30 0-52 19.5T204-612l-44 308q-2 11 4.5 17.5T182-280q2 0 16-6Zm482-154q17 0 28.5-11.5T720-480q0-17-11.5-28.5T680-520q-17 0-28.5 11.5T640-480q0 17 11.5 28.5T680-440Zm-80-120q17 0 28.5-11.5T640-600q0-17-11.5-28.5T600-640q-17 0-28.5 11.5T560-600q0 17 11.5 28.5T600-560ZM310-440h60v-70h70v-60h-70v-70h-60v70h-70v60h70v70Zm170-40Z" />
-                    </svg>
+                      <path xmlns="http://www.w3.org/2000/svg" d="M640-80v-90q-56-18-94-64t-44-106h80q8 43 40.5 71.5T700-240h120q25 0 42.5 17.5T880-180v100H640Zm120-200q-33 0-56.5-23.5T680-360q0-33 23.5-56.5T760-440q33 0 56.5 23.5T840-360q0 33-23.5 56.5T760-280ZM360-400q0-150 105-255t255-105v80q-117 0-198.5 81.5T440-400h-80Zm160 0q0-83 58.5-141.5T720-600v80q-50 0-85 35t-35 85h-80ZM80-520v-100q0-25 17.5-42.5T140-680h120q45 0 77.5-28.5T378-780h80q-6 60-44 106t-94 64v90H80Zm120-200q-33 0-56.5-23.5T120-800q0-33 23.5-56.5T200-880q33 0 56.5 23.5T280-800q0 33-23.5 56.5T200-720Z"/>                    </svg>
                   </label>
-                  <label v-if="connection == 'client' " class="text-black text-lg font-bold pt-2 pl-2">Player</label>
-                  <label v-else class="text-base-300 text-lg pt-2 pl-2">Player</label>
+                  <label v-if="connection == 'holepunch' " class="text-black text-lg font-bold pt-2 pl-2">Hole Punch</label>
+                  <label v-else class="text-base-300 text-lg pt-2 pl-2">Hole Punch</label>
                 </div>
 
-                <div v-if="connection == 'host' " class="justify-center sm:w-1/2 md:w-1/2 space-y-2 p-2">
+                <div v-if="connection == 'portforward' " class="justify-center sm:w-1/2 md:w-1/2 space-y-2 p-2">
+                    <button @click="run_server"
+                      class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Host
+                      Game</button>
+                </div>
+                <div v-else class="justify-center sm:w-1/2 md:w-1/2 space-y-2 p-2">
                   <label class="input input-bordered flex items-center gap-2">
                     PS2 IP:
                     <input type="text" class="grow font-bold" placeholder="ex. 192.168.0.253" v-model="ps2_ip" />
                   </label>
-                  <!-- <label class="input input-bordered flex items-center gap-2">
-                    Player 2 IP/ID: 
-                    <input type="text" class="grow font-bold" v-model="players[0]"/>
-                  </label>
                   <label class="input input-bordered flex items-center gap-2">
-                    Player 3 IP/ID: 
-                    <input type="text" class="grow font-bold" v-model="players[1]" />
+                    Signal Server: 
+                    <input type="text" class="grow font-bold" v-model="signal_server"/>
                   </label>
-                  <label class="input input-bordered flex items-center gap-2">
-                    Player 4 IP/ID: 
-                    <input type="text" class="grow font-bold" v-model="players[2]"  />
-                  </label> -->
-                  <div v-if="connected !== 'true' ">
-                    <button @click="run_server"
-                      class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Host
-                      Game</button>
-                  </div>
-                  <div v-else>
-                    <button @click="end_connection" class="btn text-black w-full">End Connection</button>
-                  </div>
-                </div>
-                <div v-else class="justify-center sm:w-1/2 md:w-1/2 space-y-2 p-2">
-                  <div class="flex flex-row justify-center p-2">
-                    <a class="text-lg">Test Server: <b>testserver.scct.airmon-ster.com</b></a>
-                    <!-- <b class="pt-1 pr-2">[[ user_id ]]</b> -->
-                    <a class="btn btn-sm" @click="copy_id('testserver.scct.airmon-ster.com')">
-                      <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" height="24px"
-                        viewBox="0 -960 960 960" width="24px">
-                        <path
-                          d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z" />
-                      </svg>
-                    </a>
-                  </div>
 
-                  <label class="input input-bordered flex items-center gap-2">
-                    Host IP/ID:
-                    <input type="text" class="grow font-bold" v-model="host_ip" />
-                  </label>
-                  <div v-if="connected !== 'true' ">
-                    <button @click="connect"
-                      class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Connect
+                    <button v-if="ps2_ip" @click="run_server"
+                      class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Host Game
                     </button>
-                  </div>
-                  <div v-else>
-                    <button @click="end_connection" class="btn text-black w-full">End Connection</button>
+                    <button v-else
+                      class="btn btn-disabled bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Host Game
+                    </button>
+                    <br>
+                    <div v-for="item in lobbies" tabindex="0" class="collapse collapse-arrow border-base-300 bg-base-200 border">
+                      <div class="collapse-title text-xl font-medium">[[ item.host ]]</div>
+                      <div class="collapse-content">  
+                        <p v-if="item.player2">[[ item.player2 ]]</p>
+                        <p v-if="item.player3">[[ item.player3 ]]</p>
+                        <p v-if="item.player4">[[ item.player4 ]]</p>
+                        <button @click="connect(item.endpoint)"
+                          class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Join Lobby
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-
+                <div v-else class="h-full">
+                  <br>
+                  
+                  <div class="flex flex-row justify-center m-2">
+                    <button @click="end_connection()"
+                    class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Leave Lobby
+                  </button>
+                  
+                </div>
+                <br>
+                <h3>Content Comming soon...</h3>
+    
               </div>
             </center>
           </div>
@@ -289,7 +267,7 @@
         message: 'Welcome to SCOPS2!',
         user_id: '',
         activeTab: 2,
-        connection: 'host',
+        connection: 'portforward',
         ps2_ip: '',
         players: [],
         host_ip: '',
@@ -303,6 +281,11 @@
         reason: '',
         pwa_install: '',
         username: '',
+        django_username: '',
+        signal_server: 'game.scct.airmon-ster.com',
+        url: 'https://www.splintercellonline.net',
+        lobby: '',
+        lobbies: [],
       }
     },
     methods: {
@@ -318,35 +301,58 @@
       },
       run_server() {
         this.connected = 'true';
+        const token = localStorage.getItem("token")
         // remove null player entries from player list
-        this.players.filter(item => item !== '');
         // create content for server arguments
-        content = {
-          ps2_ip: this.ps2_ip,
-          players: this.players,
+        if (this.connection == 'portforward'){
+          const content = {
+            host: this.django_username,
+            signal_server: this.user_id,
+          }
+            axios.post(this.url+'/host_room/', content, {headers: { 'Authorization': 'Token '+token}})
+            .then(response => {
+              // handle success
+              console.log(response);
+
+            }).catch(error => {
+              console.log(error);
+            })
+
+        } else {
+
+          const content = {
+            host: this.django_username,
+            signal_server: this.signal_server,
+            ps2_ip: this.ps2_ip,
+          }
+          axios.all([
+            axios.post(this.url+'/host_room/', content, {headers: { 'Authorization': 'Token '+token}}),
+            axios.post('/api/run_server', content)
+          ])
+            .then(() => {
+              // handle success
+              console.log('successful api call.');
+
+            }).catch(error => {
+              console.log(error);
+            })
         }
-        axios.post('/api/run_server', content)
-          .then(response => {
-            // handle success
-            console.log(response);
-            this.data = JSON.parse(JSON.stringify(response['data']))
-            console.log(this.data)
-          }).catch(error => {
-            console.log(error);
-          })
       },
-      connect() {
+      connect(endpoint) {
         this.connected = 'true';
+        const token = localStorage.getItem("token")
+
         // create content for server arguments
-        content = {
-          host_ip: this.host_ip,
+        const content = {
+          host_ip: endpoint,
         }
-        axios.post('/api/connect', content)
-          .then(response => {
+        axios.all([
+          axios.post(this.url+'/join_room/', content, {headers: { 'Authorization': 'Token '+token}}),
+          axios.post('/api/connect', content)
+        ])
+          .then(() => {
             // handle success
-            console.log(response);
-            this.data = JSON.parse(JSON.stringify(response['data']))
-            console.log(this.data)
+            console.log('successful api call.')
           })
           .catch(error => {
             // handle error
@@ -354,13 +360,34 @@
           })
       },
       end_connection() {
+        const token = localStorage.getItem("token")
+        const content = {
+          host: this.django_username,
+        }
         // end process connection
-        axios.get('/api/end_connection')
-          .then(response => {
+        if (this.connection !== 'portforward'){
+
+        
+        axios.all([
+          axios.post(this.url+'/leave_lobby/',content, {headers: { 'Authorization': 'Token '+token}}),
+          axios.get('/api/end_connection')
+        ])
+          .then(() => {
             // handle success
-            console.log(response);
-            this.data = JSON.parse(JSON.stringify(response['data']))
-            console.log(this.data)
+            console.log('successful api call.');
+            this.connected = 'false';
+            this.connection = 'portforward';
+          })
+          .catch(error => {
+            // handle error
+            console.log(error);
+          })
+        } else {
+          
+          axios.post(this.url+'/leave_lobby/',content, {headers: { 'Authorization': 'Token '+token}})
+          .then(() => {
+            // handle success
+            console.log('successful api call.');
             this.connected = 'false';
 
           })
@@ -368,6 +395,7 @@
             // handle error
             console.log(error);
           })
+        }
       },
 
     },
@@ -376,6 +404,7 @@
     },
     async created() {
       console.log("{{data}}")
+      this.django_username = "{{data.django_username}}";
       this.username = "{{data.username}}";
       this.discord_id = "{{data.discord_id}}";
       this.avatar = "{{data.avatar}}";
@@ -395,6 +424,32 @@
         // handle error
         console.log(error);
       }
+
+        // Replace these with your actual credentials
+        const username = this.django_username;
+        const password = this.discord_id;
+        console.log(username)
+        console.log(password)
+
+      try {
+        const response = await axios.post(this.url+'/api/v1/token/login/', {
+                username: username,
+                password: password
+            });
+        // handle success
+        const token = response.data.auth_token;
+        localStorage.setItem('token', token);
+
+        // Use the token in future requests
+        axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+
+        console.log('Token stored and set in headers:', token);
+
+      } catch (error) {
+        // handle error
+        console.error('Error fetching auth token:', error);
+      }
+
     },
     mounted() {
       this.email = 1; //this is to avoid the email prompt for now, in the future we can incorporate it... will also have to create logic to send the email upon new content uploads...
@@ -402,6 +457,20 @@
         // document.getElementById(email_modal).showModal()
         email_modal.showModal()
       }
+      const token = localStorage.getItem("token")
+
+      this.intervalCheck = setInterval(() => {
+        this.lobbies = [];
+        axios.get(this.url+'/get_lobbies/', {headers: { 'Authorization': 'Token '+token}})
+        .then(response => {
+          var count = 0;
+          console.log(response.data)
+          for (var item of response.data){
+            this.lobbies.push(item[count])
+          }
+        })
+        .catch((err) => console.error(err));
+      }, 10000)
     },
     computed: {
 
