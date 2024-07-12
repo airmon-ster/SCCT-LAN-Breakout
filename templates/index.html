@@ -50,7 +50,8 @@
           </div>
         </div>
         <div v-if="username != 'undefined'" class="flex-1 px-2 mx-2  btn btn-ghost normal-case text-lg ">
-          <a>[[username]]</a></div>
+          <a>[[username]]</a>
+        </div>
         <div v-else class="flex-1 px-2 mx-2  btn btn-ghost normal-case text-lg "><a></a></div>
         <div class="flex-none hidden lg:block">
           <ul class="menu menu-horizontal">
@@ -120,7 +121,8 @@
 
                 <div class="flex flex-row justify-center m-2">
 
-                  <label v-if="connection == 'portforward' " class="text-black text-lg font-bold pt-2 pr-2">Port Forward</label>
+                  <label v-if="connection == 'portforward' " class="text-black text-lg font-bold pt-2 pr-2">Port
+                    Forward</label>
                   <label v-else class="text-base-300 text-lg pt-2 pr-2">Port Forward</label>
 
                   <label class="swap swap-flip">
@@ -129,22 +131,27 @@
                     <input type="checkbox" checked>
 
 
-                    <svg class="swap-on fill-current" @click="connection = 'holepunch' " xmlns="http://www.w3.org/2000/svg"
-                      width="48" height="48" viewBox="0 -960 960 960">
-                      <path xmlns="http://www.w3.org/2000/svg" d="M200-120q-33 0-56.5-23.5T120-200v-160q0-33 23.5-56.5T200-440h400v-160h80v160h80q33 0 56.5 23.5T840-360v160q0 33-23.5 56.5T760-120H200Zm0-80h560v-160H200v160Zm80-40q17 0 28.5-11.5T320-280q0-17-11.5-28.5T280-320q-17 0-28.5 11.5T240-280q0 17 11.5 28.5T280-240Zm140 0q17 0 28.5-11.5T460-280q0-17-11.5-28.5T420-320q-17 0-28.5 11.5T380-280q0 17 11.5 28.5T420-240Zm140 0q17 0 28.5-11.5T600-280q0-17-11.5-28.5T560-320q-17 0-28.5 11.5T520-280q0 17 11.5 28.5T560-240Zm10-390-58-58q26-24 58-38t70-14q38 0 70 14t58 38l-58 58q-14-14-31.5-22t-38.5-8q-21 0-38.5 8T570-630ZM470-730l-56-56q44-44 102-69t124-25q66 0 124 25t102 69l-56 56q-33-33-76.5-51.5T640-800q-50 0-93.5 18.5T470-730ZM200-200v-160 160Z"/>
+                    <svg class="swap-on fill-current" @click="connection = 'holepunch' "
+                      xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 -960 960 960">
+                      <path xmlns="http://www.w3.org/2000/svg"
+                        d="M200-120q-33 0-56.5-23.5T120-200v-160q0-33 23.5-56.5T200-440h400v-160h80v160h80q33 0 56.5 23.5T840-360v160q0 33-23.5 56.5T760-120H200Zm0-80h560v-160H200v160Zm80-40q17 0 28.5-11.5T320-280q0-17-11.5-28.5T280-320q-17 0-28.5 11.5T240-280q0 17 11.5 28.5T280-240Zm140 0q17 0 28.5-11.5T460-280q0-17-11.5-28.5T420-320q-17 0-28.5 11.5T380-280q0 17 11.5 28.5T420-240Zm140 0q17 0 28.5-11.5T600-280q0-17-11.5-28.5T560-320q-17 0-28.5 11.5T520-280q0 17 11.5 28.5T560-240Zm10-390-58-58q26-24 58-38t70-14q38 0 70 14t58 38l-58 58q-14-14-31.5-22t-38.5-8q-21 0-38.5 8T570-630ZM470-730l-56-56q44-44 102-69t124-25q66 0 124 25t102 69l-56 56q-33-33-76.5-51.5T640-800q-50 0-93.5 18.5T470-730ZM200-200v-160 160Z" />
                     </svg>
-                    <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg " @click="connection = 'portforward' "
-                      height="48" viewBox="0 -960 960 960" width="48" fill="#e8eaed">
-                      <path xmlns="http://www.w3.org/2000/svg" d="M640-80v-90q-56-18-94-64t-44-106h80q8 43 40.5 71.5T700-240h120q25 0 42.5 17.5T880-180v100H640Zm120-200q-33 0-56.5-23.5T680-360q0-33 23.5-56.5T760-440q33 0 56.5 23.5T840-360q0 33-23.5 56.5T760-280ZM360-400q0-150 105-255t255-105v80q-117 0-198.5 81.5T440-400h-80Zm160 0q0-83 58.5-141.5T720-600v80q-50 0-85 35t-35 85h-80ZM80-520v-100q0-25 17.5-42.5T140-680h120q45 0 77.5-28.5T378-780h80q-6 60-44 106t-94 64v90H80Zm120-200q-33 0-56.5-23.5T120-800q0-33 23.5-56.5T200-880q33 0 56.5 23.5T280-800q0 33-23.5 56.5T200-720Z"/>                    </svg>
+                    <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg "
+                      @click="connection = 'portforward' " height="48" viewBox="0 -960 960 960" width="48"
+                      fill="#e8eaed">
+                      <path xmlns="http://www.w3.org/2000/svg"
+                        d="M640-80v-90q-56-18-94-64t-44-106h80q8 43 40.5 71.5T700-240h120q25 0 42.5 17.5T880-180v100H640Zm120-200q-33 0-56.5-23.5T680-360q0-33 23.5-56.5T760-440q33 0 56.5 23.5T840-360q0 33-23.5 56.5T760-280ZM360-400q0-150 105-255t255-105v80q-117 0-198.5 81.5T440-400h-80Zm160 0q0-83 58.5-141.5T720-600v80q-50 0-85 35t-35 85h-80ZM80-520v-100q0-25 17.5-42.5T140-680h120q45 0 77.5-28.5T378-780h80q-6 60-44 106t-94 64v90H80Zm120-200q-33 0-56.5-23.5T120-800q0-33 23.5-56.5T200-880q33 0 56.5 23.5T280-800q0 33-23.5 56.5T200-720Z" />
+                    </svg>
                   </label>
-                  <label v-if="connection == 'holepunch' " class="text-black text-lg font-bold pt-2 pl-2">Hole Punch</label>
+                  <label v-if="connection == 'holepunch' " class="text-black text-lg font-bold pt-2 pl-2">Hole
+                    Punch</label>
                   <label v-else class="text-base-300 text-lg pt-2 pl-2">Hole Punch</label>
                 </div>
 
                 <div v-if="connection == 'portforward' " class="justify-center sm:w-1/2 md:w-1/2 space-y-2 p-2">
-                    <button @click="run_server"
-                      class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Host
-                      Game</button>
+                  <button @click="run_server"
+                    class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Host
+                    Game</button>
                 </div>
                 <div v-else class="justify-center sm:w-1/2 md:w-1/2 space-y-2 p-2">
                   <label class="input input-bordered flex items-center gap-2">
@@ -152,42 +159,50 @@
                     <input type="text" class="grow font-bold" placeholder="ex. 192.168.0.253" v-model="ps2_ip" />
                   </label>
                   <label class="input input-bordered flex items-center gap-2">
-                    Signal Server: 
-                    <input type="text" class="grow font-bold" v-model="signal_server"/>
+                    Signal Server:
+                    <input type="text" class="grow font-bold" v-model="signal_server" />
                   </label>
 
-                    <button v-if="ps2_ip" @click="run_server"
-                      class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Host Game
-                    </button>
-                    <button v-else
-                      class="btn btn-disabled bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Host Game
-                    </button>
-                    <br>
-                    <div v-for="item in lobbies" tabindex="0" class="collapse collapse-arrow border-base-300 bg-base-200 border">
-                      <div class="collapse-title text-xl font-medium">[[ item.host ]]</div>
-                      <div class="collapse-content">  
-                        <p v-if="item.player2">[[ item.player2 ]]</p>
-                        <p v-if="item.player3">[[ item.player3 ]]</p>
-                        <p v-if="item.player4">[[ item.player4 ]]</p>
-                        <button @click="connect(item.endpoint)"
-                          class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Join Lobby
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div v-else class="h-full">
-                  <br>
-                  
-                  <div class="flex flex-row justify-center m-2">
-                    <button @click="end_connection()"
-                    class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Leave Lobby
+                  <button v-if="ps2_ip" @click="run_server"
+                    class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Host
+                    Game
                   </button>
+                  <button v-else
+                    class="btn btn-disabled bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Host
+                    Game
+                  </button>
+                  <br>
                   
                 </div>
                 <br>
-                <h3>Content Comming soon...</h3>
-    
+                <div v-for="item in lobbies" class="w-3/4">
+                  <div  class="flex flex-row w-1/2">
+                    <h1 class="text-xl font-medium mr-2 justify-self-start">[[ item.host ]]</h1>
+                    
+                    <button @click="connect(item.endpoint)"
+                      class="justify-self-end btn btn-sm bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-1/8">Join Lobby
+                    </button>
+                  </div>
+                      <p v-if="item.player2">[[ item.player2 ]]</p>
+                      <p v-if="item.player3">[[ item.player3 ]]</p>
+                      <p v-if="item.player4">[[ item.player4 ]]</p>
+                      <br>
+                  
+                </div>
+              </div>
+              <div v-else class="h-full">
+                <br>
+
+                <div class="flex flex-row justify-center m-2">
+                  <button @click="end_connection()"
+                    class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-full">Leave
+                    Lobby
+                  </button>
+
+                </div>
+                <br>
+                <h3>Content Coming soon...</h3>
+
               </div>
             </center>
           </div>
@@ -215,48 +230,48 @@
         </div>
       </div>
     </div>
-      <div class="drawer-side">
-        <label for="my-drawer-4" class="drawer-overlay"></label>
-        <ul class="menu p-4 overflow-y-auto w-80 bg-base-100 h-full">
-          <!-- Sidebar content here -->
-          <div class="center">
-            <img src="{{url_for('static', filename='scops2_rounded.png')}}" width="90%" />
-          </div>
-          <li><a href="/"><i class="material-icons ">home</i>Home</a></li>
-          <li><a href="https://www.splintercellonline.net/Gameplay/"><i class="material-icons">live_tv</i>Gameplay</a>
+    <div class="drawer-side">
+      <label for="my-drawer-4" class="drawer-overlay"></label>
+      <ul class="menu p-4 overflow-y-auto w-80 bg-base-100 h-full">
+        <!-- Sidebar content here -->
+        <div class="center">
+          <img src="{{url_for('static', filename='scops2_rounded.png')}}" width="90%" />
+        </div>
+        <li><a href="/"><i class="material-icons ">home</i>Home</a></li>
+        <li><a href="https://www.splintercellonline.net/Gameplay/"><i class="material-icons">live_tv</i>Gameplay</a>
+        </li>
+        <li><a href="https://www.splintercellonline.net/Videos/"><i
+              class="material-icons ">videogame_asset</i>Tutorials</a></li>
+        <li><a href="https://www.splintercellonline.net/SetupGuide/PS2/"><i
+              class="material-icons ">format_list_numbered</i>Setup Guide</a></li>
+        <!-- <li><a href="/Messages/"><i class="material-icons ">forum</i>Messages</a></li> -->
+        <li><a href="https://www.splintercellonline.net/Leaderboards"><i
+              class="material-icons">insert_chart</i>Leaderboards</a></li>
+        <div v-if="role === 'admin'">
+          <li><a href="https://www.splintercellonline.net/Dashboard_Uploads"><i
+                class="material-icons">dashboard</i>Admin Dashboard</a>
           </li>
-          <li><a href="https://www.splintercellonline.net/Videos/"><i
-                class="material-icons ">videogame_asset</i>Tutorials</a></li>
-          <li><a href="https://www.splintercellonline.net/SetupGuide/PS2/"><i
-                class="material-icons ">format_list_numbered</i>Setup Guide</a></li>
-          <!-- <li><a href="/Messages/"><i class="material-icons ">forum</i>Messages</a></li> -->
-          <li><a href="https://www.splintercellonline.net/Leaderboards"><i
-                class="material-icons">insert_chart</i>Leaderboards</a></li>
-          <div v-if="role === 'admin'">
-            <li><a href="https://www.splintercellonline.net/Dashboard_Uploads"><i
-                  class="material-icons">dashboard</i>Admin Dashboard</a>
-            </li>
-          </div>
+        </div>
 
-        
-          <br>
-          <li><a href="https://www.splintercellonline.net/signout"
-              class="btn btn-block bg-green-500 border-green-500 hover:border-green-500 shadow-lg shadow-green-500/50  hover:bg-green-500  hover:shadow-xl hover:shadow-green-500/50 no-animation">Logout</a>
-          </li>
 
-        </ul>
-      </div>
+        <br>
+        <li><a href="https://www.splintercellonline.net/signout"
+            class="btn btn-block bg-green-500 border-green-500 hover:border-green-500 shadow-lg shadow-green-500/50  hover:bg-green-500  hover:shadow-xl hover:shadow-green-500/50 no-animation">Logout</a>
+        </li>
+
+      </ul>
+    </div>
   </div>
 
 
 
 </body>
-<script>
+<!-- <script>
   // Disable right-clicking
   document.addEventListener('contextmenu', function (event) {
     event.preventDefault();
   });
-</script>
+</script> -->
 <script>
   const { createApp } = Vue
 
@@ -304,12 +319,12 @@
         const token = localStorage.getItem("token")
         // remove null player entries from player list
         // create content for server arguments
-        if (this.connection == 'portforward'){
+        if (this.connection == 'portforward') {
           const content = {
             host: this.django_username,
             signal_server: this.user_id,
           }
-            axios.post(this.url+'/host_room/', content, {headers: { 'Authorization': 'Token '+token}})
+          axios.post(this.url + '/host_room/', content, { headers: { 'Authorization': 'Token ' + token } })
             .then(response => {
               // handle success
               console.log(response);
@@ -326,7 +341,7 @@
             ps2_ip: this.ps2_ip,
           }
           axios.all([
-            axios.post(this.url+'/host_room/', content, {headers: { 'Authorization': 'Token '+token}}),
+            axios.post(this.url + '/host_room/', content, { headers: { 'Authorization': 'Token ' + token } }),
             axios.post('/api/run_server', content)
           ])
             .then(() => {
@@ -345,9 +360,10 @@
         // create content for server arguments
         const content = {
           host_ip: endpoint,
+          host: this.django_username
         }
         axios.all([
-          axios.post(this.url+'/join_room/', content, {headers: { 'Authorization': 'Token '+token}}),
+          axios.post(this.url + '/join_room/', content, { headers: { 'Authorization': 'Token ' + token } }),
           axios.post('/api/connect', content)
         ])
           .then(() => {
@@ -365,36 +381,36 @@
           host: this.django_username,
         }
         // end process connection
-        if (this.connection !== 'portforward'){
+        if (this.connection !== 'portforward') {
 
-        
-        axios.all([
-          axios.post(this.url+'/leave_lobby/',content, {headers: { 'Authorization': 'Token '+token}}),
-          axios.get('/api/end_connection')
-        ])
-          .then(() => {
-            // handle success
-            console.log('successful api call.');
-            this.connected = 'false';
-            this.connection = 'portforward';
-          })
-          .catch(error => {
-            // handle error
-            console.log(error);
-          })
+
+          axios.all([
+            axios.post(this.url + '/leave_lobby/', content, { headers: { 'Authorization': 'Token ' + token } }),
+            axios.get('/api/end_connection')
+          ])
+            .then(() => {
+              // handle success
+              console.log('successful api call.');
+              this.connected = 'false';
+              this.connection = 'portforward';
+            })
+            .catch(error => {
+              // handle error
+              console.log(error);
+            })
         } else {
-          
-          axios.post(this.url+'/leave_lobby/',content, {headers: { 'Authorization': 'Token '+token}})
-          .then(() => {
-            // handle success
-            console.log('successful api call.');
-            this.connected = 'false';
 
-          })
-          .catch(error => {
-            // handle error
-            console.log(error);
-          })
+          axios.post(this.url + '/leave_lobby/', content, { headers: { 'Authorization': 'Token ' + token } })
+            .then(() => {
+              // handle success
+              console.log('successful api call.');
+              this.connected = 'false';
+
+            })
+            .catch(error => {
+              // handle error
+              console.log(error);
+            })
         }
       },
 
@@ -425,17 +441,17 @@
         console.log(error);
       }
 
-        // Replace these with your actual credentials
-        const username = this.django_username;
-        const password = this.discord_id;
-        console.log(username)
-        console.log(password)
+      // Replace these with your actual credentials
+      const username = this.django_username;
+      const password = this.discord_id;
+      console.log(username)
+      console.log(password)
 
       try {
-        const response = await axios.post(this.url+'/api/v1/token/login/', {
-                username: username,
-                password: password
-            });
+        const response = await axios.post(this.url + '/api/v1/token/login/', {
+          username: username,
+          password: password
+        });
         // handle success
         const token = response.data.auth_token;
         localStorage.setItem('token', token);
@@ -461,15 +477,16 @@
 
       this.intervalCheck = setInterval(() => {
         this.lobbies = [];
-        axios.get(this.url+'/get_lobbies/', {headers: { 'Authorization': 'Token '+token}})
-        .then(response => {
-          var count = 0;
-          console.log(response.data)
-          for (var item of response.data){
-            this.lobbies.push(item[count])
-          }
-        })
-        .catch((err) => console.error(err));
+        axios.get(this.url + '/get_lobbies/', { headers: { 'Authorization': 'Token ' + token } })
+          .then(response => {
+            // console.log(response.data)
+            for (var item of Object.keys(response.data)) {
+              // console.log(JSON.stringify(response.data[item]))
+              this.lobbies.push(response.data[item])
+            }
+            console.log(this.lobbies)
+          })
+          .catch((err) => console.error(err));
       }, 10000)
     },
     computed: {
