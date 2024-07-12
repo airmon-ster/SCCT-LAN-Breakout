@@ -174,18 +174,22 @@
                   <br>
                   
                 </div>
-                <br>
-                <div v-for="item in lobbies" class="w-3/4">
-                  <div  class="flex flex-row w-1/2">
-                    <h1 class="text-xl font-medium mr-2 justify-self-start">[[ item.host ]]</h1>
-                    
+                <div v-for="item in lobbies" class="sm:w-1/2 md:w-1/2">
+                  <div v-if="item.host !== this.django_username" class="flex flex-row w-full justify-between p-2">
+                    <div class="flex flex-row">
+                      <h1 class="text-xl font-medium pt-2 pl-2">[[ item.host_username ]]</h1>
+                      <h1 v-if="item.player2" class="pt-2 pl-2 text-lg font-bold">(2/4)</h1>
+                      <h1 v-else-if="item.player3" class="pt-2 pl-2 text-lg font-bold">(3/4)</h1>
+                      <h1 v-else-if="item.player4" class="pt-2 pl-2 text-lg font-bold">(4/4)</h1>
+                      <h1 v-else class="pt-2 pl-2 text-lg font-bold">(1/4)</h1>
+                    </div>
                     <button @click="connect(item.endpoint)"
-                      class="justify-self-end btn btn-sm bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 w-1/8">Join Lobby
+                      class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100">Join Lobby
                     </button>
                   </div>
-                      <p v-if="item.player2">[[ item.player2 ]]</p>
-                      <p v-if="item.player3">[[ item.player3 ]]</p>
-                      <p v-if="item.player4">[[ item.player4 ]]</p>
+                      <p v-if="item.player2" class="flex justify-content-start pl-4">[[ item.player2 ]]</p>
+                      <p v-if="item.player3" class="flex justify-content-start pl-4">[[ item.player3 ]]</p>
+                      <p v-if="item.player4" class="flex justify-content-start pl-4">[[ item.player4 ]]</p>
                       <br>
                   
                 </div>
@@ -316,15 +320,15 @@
       },
       run_server() {
         this.connected = 'true';
-        const token = localStorage.getItem("token")
         // remove null player entries from player list
         // create content for server arguments
         if (this.connection == 'portforward') {
           const content = {
             host: this.django_username,
+            host_username: this.username,
             signal_server: this.user_id,
           }
-          axios.post(this.url + '/host_room/', content, { headers: { 'Authorization': 'Token ' + token } })
+          axios.post(this.url + '/host_room/', content)
             .then(response => {
               // handle success
               console.log(response);
@@ -337,11 +341,12 @@
 
           const content = {
             host: this.django_username,
+            host_username: this.username,
             signal_server: this.signal_server,
             ps2_ip: this.ps2_ip,
           }
           axios.all([
-            axios.post(this.url + '/host_room/', content, { headers: { 'Authorization': 'Token ' + token } }),
+            axios.post(this.url + '/host_room/', content),
             axios.post('/api/run_server', content)
           ])
             .then(() => {
@@ -355,7 +360,6 @@
       },
       connect(endpoint) {
         this.connected = 'true';
-        const token = localStorage.getItem("token")
 
         // create content for server arguments
         const content = {
@@ -363,7 +367,7 @@
           host: this.django_username
         }
         axios.all([
-          axios.post(this.url + '/join_room/', content, { headers: { 'Authorization': 'Token ' + token } }),
+          axios.post(this.url + '/join_room/', content),
           axios.post('/api/connect', content)
         ])
           .then(() => {
@@ -376,7 +380,6 @@
           })
       },
       end_connection() {
-        const token = localStorage.getItem("token")
         const content = {
           host: this.django_username,
         }
@@ -385,7 +388,7 @@
 
 
           axios.all([
-            axios.post(this.url + '/leave_lobby/', content, { headers: { 'Authorization': 'Token ' + token } }),
+            axios.post(this.url + '/leave_lobby/', content),
             axios.get('/api/end_connection')
           ])
             .then(() => {
@@ -400,7 +403,7 @@
             })
         } else {
 
-          axios.post(this.url + '/leave_lobby/', content, { headers: { 'Authorization': 'Token ' + token } })
+          axios.post(this.url + '/leave_lobby/', content)
             .then(() => {
               // handle success
               console.log('successful api call.');
@@ -412,7 +415,23 @@
               console.log(error);
             })
         }
+        this.get_lobbies();
       },
+      get_lobbies(){
+        this.lobbies_temp = [];
+        axios.get(this.url + '/get_lobbies/')
+          .then(response => {
+            // console.log(response.data)
+            for (var item of Object.keys(response.data)) {
+              // console.log(JSON.stringify(response.data[item]))
+              this.lobbies_temp.push(response.data[item])
+            }
+            if (this.lobbies_temp !== this.lobbies){
+              this.lobbies = this.lobbies_temp;
+            }
+          })
+          .catch((err) => console.error(err));
+      }
 
     },
     watch: {
@@ -454,10 +473,10 @@
         });
         // handle success
         const token = response.data.auth_token;
-        localStorage.setItem('token', token);
-
         // Use the token in future requests
         axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+        // localStorage.setItem('token', token);
+
 
         console.log('Token stored and set in headers:', token);
 
@@ -465,7 +484,7 @@
         // handle error
         console.error('Error fetching auth token:', error);
       }
-
+      this.get_lobbies();
     },
     mounted() {
       this.email = 1; //this is to avoid the email prompt for now, in the future we can incorporate it... will also have to create logic to send the email upon new content uploads...
@@ -473,18 +492,19 @@
         // document.getElementById(email_modal).showModal()
         email_modal.showModal()
       }
-      const token = localStorage.getItem("token")
 
       this.intervalCheck = setInterval(() => {
-        this.lobbies = [];
-        axios.get(this.url + '/get_lobbies/', { headers: { 'Authorization': 'Token ' + token } })
+        this.lobbies_temp = [];
+        axios.get(this.url + '/get_lobbies/')
           .then(response => {
             // console.log(response.data)
             for (var item of Object.keys(response.data)) {
               // console.log(JSON.stringify(response.data[item]))
-              this.lobbies.push(response.data[item])
+              this.lobbies_temp.push(response.data[item])
             }
-            console.log(this.lobbies)
+            if (this.lobbies_temp !== this.lobbies){
+              this.lobbies = this.lobbies_temp;
+            }
           })
           .catch((err) => console.error(err));
       }, 10000)
