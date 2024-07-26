@@ -20,6 +20,7 @@ TEST_KEEP_ALIVE = b'\xff' * 1200
 class Server:
     local_ps2: str
     signal: str
+    iface: str
     timeout: int = field(default=20)
     ports: list[int] = field(default_factory=lambda: [10070, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079, 10080])
 
@@ -35,7 +36,10 @@ class Server:
                         print(f"Received port to hole-punch: {punch_port}")
                         pkt = Ether()/IP(dst=self.signal, src=self.local_ps2)/UDP(sport=3658, dport=int(punch_port))/Raw()
                         pkt[Raw].load = TEST_KEEP_ALIVE
-                        sendp(pkt, verbose=0)
+                        if self.iface:
+                            sendp(pkt, iface=self.iface, verbose=0) 
+                        else:
+                            sendp(pkt, verbose=0)
                         print(f"Sent keep alive packet to {self.signal} on port {punch_port}")
                 except websockets.ConnectionClosed:
                     print("Connection Closed. Reconnecting...")

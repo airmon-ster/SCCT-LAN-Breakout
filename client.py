@@ -35,6 +35,7 @@ GAME_INFO: bytes = (b'\xff\xff\xff\xff\x04\x00\x00\x00\x01\x00\x00\x00\x0a\x00\x
 @dataclass
 class Client:
     remote: SimpleNamespace
+    iface: str
     res_action: bytes = field(default=RES_ACTION)
     res_trailer: bytes = field(default=RES_TRAILER)
     player_host: bytes = field(default=PLAYER_HOST)
@@ -43,14 +44,17 @@ class Client:
 
     def listen(self) -> None:
         try:
-            sniff(lfilter=lambda x: x.haslayer(UDP) and x[UDP].sport == 1001 and x[Ether].dst == 'ff:ff:ff:ff:ff:ff' and len(x) == 70,
-                  prn=lambda x: parse_request_packet(x, client=self))
+            if self.iface:
+                sniff(iface=self.iface, lfilter=lambda x: x.haslayer(UDP) and x[UDP].sport == 1001 and x[Ether].dst == 'ff:ff:ff:ff:ff:ff' and len(x) == 70,
+                    prn=lambda x: parse_request_packet(x, client=self))
+            else:
+                sniff(lfilter=lambda x: x.haslayer(UDP) and x[UDP].sport == 1001 and x[Ether].dst == 'ff:ff:ff:ff:ff:ff' and len(x) == 70,
+                    prn=lambda x: parse_request_packet(x, client=self))
         except Exception as e:
             print(f"Error in listen: {repr(e)}")
 
     def __post_init__(self) -> None:
         build_client_banner(remote=self.remote)
-
 
 def send_response_packet(preamble: bytes, postamble: bytes, client: Client, broadcast_addr: str) -> None:
     try:
@@ -61,10 +65,12 @@ def send_response_packet(preamble: bytes, postamble: bytes, client: Client, broa
         new_payload = client.res_action + preamble + client.game_info + postamble + client.res_trailer
         res_pkt[Raw].load = new_payload
         # send the response packet
-        sendp(res_pkt, verbose=0)
+        if iface:
+            sendp(res_pkt, iface=client.iface, verbose=0)
+        else:
+            sendp(res_pkt, verbose=0)
     except Exception as e:
         print(f"Error in send_response_packet: {repr(e)}")
-
 
 def parse_request_packet(pkt, client: Client) -> None:
     try:
