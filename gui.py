@@ -12,6 +12,7 @@ import base64
 import re
 import platform
 from flask_cors import CORS
+import psutil
 
 # WORKSAFE=False
 # try:
@@ -267,6 +268,12 @@ def end_connection():
 @app.route('/api/check_localhost_app', methods=['GET'])
 def check_localhost_app():
     return jsonify({'status': 'success'})
+
+@app.route('/api/get_network_adapters', methods=['GET'])
+def get_network_adapters():
+    adapters = psutil.net_if_addrs()
+    network_adapters = list(adapters.keys())
+    return jsonify({'nics':network_adapters})
 
 
 if __name__ == '__main__':

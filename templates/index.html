@@ -315,7 +315,7 @@
         username: '',
         django_username: '',
         signal_server: 'game.scct.airmon-ster.com',
-        url: 'http://127.0.0.1:8000',
+        url: 'https://www.splintercellonline.net',//'http://127.0.0.1:8000',
         lobby: '',
         lobbies: [],
         nics: [],
@@ -512,7 +512,7 @@
         email_modal.showModal()
       }
       this.nics = [];
-        axios.get(this.url + '/get_network_adapters/')
+        axios.get('/api/get_network_adapters')
           .then(response => {
             console.log(response.data)
             console.log(response.data['nics'])
