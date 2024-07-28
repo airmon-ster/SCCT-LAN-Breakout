@@ -378,6 +378,7 @@
       connect(endpoint) {
         this.connected = 'true';
         this.connection = 'client';
+        console.log('Adapter: '+this.adapter)
         // create content for server arguments
         const content = {
           host_ip: endpoint,
