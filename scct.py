@@ -16,13 +16,13 @@ def main() -> None:
         parser.add_argument('--ps', type=str, help='The source IP address of the host\'s ps2')
         parser.add_argument('--signal', type=str, help='Space separated hostnames or IPs of the players joining the game')
         parser.add_argument('--timeout', type=int, help='The timeout for the server hole punch method keep alives', default=20)
-        parser.add_argument('--nic', type=str, help='The active network adapter to use.', default='')
+        parser.add_argument('--nic', type=str, help='The active network adapter to use.')
         args: argparse.Namespace = parser.parse_args()
 
         if args.action == 'client':
             if not validate_client_parameters(args=args):
                 return
-            if args.nic:
+            if args.nic != '':
                 Client(remote=args.remote, iface=args.nic).listen()
             else:
                 Client(remote=args.remote).listen()
@@ -30,7 +30,7 @@ def main() -> None:
         elif args.action == 'server':
             if not validate_server_parameters(args=args):
                 return
-            if args.nic:
+            if args.nic != '':
                 server = Server(local_ps2=args.ps, signal=args.signal, timeout=args.timeout, iface=args.nic)
             else:
                 server = Server(local_ps2=args.ps, signal=args.signal, timeout=args.timeout)
