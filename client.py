@@ -44,7 +44,7 @@ class Client:
 
     def listen(self) -> None:
         try:
-            if self.iface:
+            if self.iface != '':
                 sniff(iface=self.iface, lfilter=lambda x: x.haslayer(UDP) and x[UDP].sport == 1001 and x[Ether].dst == 'ff:ff:ff:ff:ff:ff' and len(x) == 70,
                     prn=lambda x: parse_request_packet(x, client=self))
             else:
@@ -65,7 +65,7 @@ def send_response_packet(preamble: bytes, postamble: bytes, client: Client, broa
         new_payload = client.res_action + preamble + client.game_info + postamble + client.res_trailer
         res_pkt[Raw].load = new_payload
         # send the response packet
-        if iface:
+        if client.iface != '':
             sendp(res_pkt, iface=client.iface, verbose=0)
         else:
             sendp(res_pkt, verbose=0)

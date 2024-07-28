@@ -36,7 +36,7 @@ class Server:
                         print(f"Received port to hole-punch: {punch_port}")
                         pkt = Ether()/IP(dst=self.signal, src=self.local_ps2)/UDP(sport=3658, dport=int(punch_port))/Raw()
                         pkt[Raw].load = TEST_KEEP_ALIVE
-                        if self.iface:
+                        if self.iface != '':
                             sendp(pkt, iface=self.iface, verbose=0) 
                         else:
                             sendp(pkt, verbose=0)
