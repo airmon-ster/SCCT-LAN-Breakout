@@ -13,6 +13,7 @@ import re
 import platform
 from flask_cors import CORS
 import psutil
+import json
 
 # WORKSAFE=False
 # try:
@@ -216,9 +217,23 @@ def run_server():
     ps2_ip = data.get('ps2_ip')
     signal_server = data.get('signal_server')
     adapter = data.get('adapter')
+    user_id = data.get('user_id')
+    ip = deobfuscate_ip(user_id)
     if signal_server == '':
-        signal_server = 'game.scct.airmon-ster.com'
+        signal_server = '20.55.32.50'#'game.scct.airmon-ster.com'
     ipv4_pattern = re.compile(r'^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
+    if signal_server == '20.55.32.50':
+        url = 'http://'+signal_server+':5000/scops_signal_server'
+
+        # Replace with the IP address you want to send
+        ip_data = {"ip_address": ip}
+
+        # Send the POST request with the IP address
+        response = requests.post(url, headers={"Content-Type": "application/json"}, data=json.dumps(ip_data))
+
+        # Print the response
+        print(response.status_code)
+        print(response.json())
 
 
     # Construct the path to scct.py one directory back

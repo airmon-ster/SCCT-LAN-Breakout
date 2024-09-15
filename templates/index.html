@@ -314,7 +314,7 @@
         pwa_install: '',
         username: '',
         django_username: '',
-        signal_server: 'game.scct.airmon-ster.com',
+        signal_server: '20.55.32.50',//'game.scct.airmon-ster.com',
         url: 'https://www.splintercellonline.net',//'http://127.0.0.1:8000',
         lobby: '',
         lobbies: [],
@@ -334,7 +334,6 @@
         });
       },
       run_server() {
-        this.connected = 'true';
         // remove null player entries from player list
         // create content for server arguments
         if (this.connection == 'portforward') {
@@ -348,7 +347,7 @@
             .then(response => {
               // handle success
               console.log(response);
-
+              this.connected = 'true';
             }).catch(error => {
               console.log(error);
             })
@@ -361,14 +360,20 @@
             signal_server: this.signal_server,
             ps2_ip: this.ps2_ip,
             adapter: this.adapter,
+            user_id: this.user_id,
           }
-          axios.all([
-            axios.post(this.url + '/host_room/', content),
-            axios.post('/api/run_server', content)
-          ])
+            axios.post(this.url + '/host_room/', content)
             .then(() => {
               // handle success
               console.log('successful api call.');
+              this.connected = 'true';
+              axios.post('/api/run_server', content)
+              .then(() => {
+
+              })
+              .catch(error => {
+
+              })
 
             }).catch(error => {
               console.log(error);
