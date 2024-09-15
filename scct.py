@@ -12,7 +12,7 @@ def main() -> None:
                                                                   usage='%(prog)s [options]',
                                                                   epilog="For more help or information, visit us on discord at https://discord.gg/SC2EXYHA\n")
         parser.add_argument('action', type=str, help='The action to perform', choices=['client', 'server'])
-        parser.add_argument('--remote', type=str, help='The  hexternalost IP address')
+        parser.add_argument('--remote', type=str, help='The host external IP address')
         parser.add_argument('--ps', type=str, help='The source IP address of the host\'s ps2')
         parser.add_argument('--signal', type=str, help='Space separated hostnames or IPs of the players joining the game')
         parser.add_argument('--timeout', type=int, help='The timeout for the server hole punch method keep alives', default=20)
