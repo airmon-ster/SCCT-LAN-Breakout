@@ -218,7 +218,9 @@ def run_server():
     signal_server = data.get('signal_server')
     adapter = data.get('adapter')
     user_id = data.get('user_id')
+    # print(user_id)
     ip = deobfuscate_ip(user_id)
+    # print(ip)
     if signal_server == '':
         signal_server = '20.55.32.50'#'game.scct.airmon-ster.com'
     ipv4_pattern = re.compile(r'^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
@@ -233,7 +235,7 @@ def run_server():
 
         # Print the response
         print(response.status_code)
-        print(response.json())
+        # print(response.json())
 
 
     # Construct the path to scct.py one directory back

@@ -362,18 +362,14 @@
             adapter: this.adapter,
             user_id: this.user_id,
           }
-            axios.post(this.url + '/host_room/', content)
+          axios.all([
+            axios.post(this.url + '/host_room/', content),
+            axios.post('/api/run_server', content),
+          ])
             .then(() => {
               // handle success
               console.log('successful api call.');
               this.connected = 'true';
-              axios.post('/api/run_server', content)
-              .then(() => {
-
-              })
-              .catch(error => {
-
-              })
 
             }).catch(error => {
               console.log(error);
