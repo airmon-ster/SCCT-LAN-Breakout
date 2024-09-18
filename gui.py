@@ -14,6 +14,9 @@ import platform
 from flask_cors import CORS
 import psutil
 import json
+import webbrowser
+
+WIREGUARD_SERVER = '20.55.32.50'
 
 # WORKSAFE=False
 # try:
@@ -29,72 +32,7 @@ def get_platform_type():
 
 
 def run_with_switches(system):
-    # Check the default browser
-    if system == 'Darwin':
-        # Path for Google Chrome on macOS
-        chrome_path = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-        if os.path.exists(chrome_path):
-            command = [
-                chrome_path,
-                '--app=http://127.0.0.1:8001/scops',
-                '--disable-pinch',
-                '--disable-extensions',
-                '--guest'
-            ]
-        print("Running command:", command)
-        subprocess.Popen(command)
-        return
-    elif system == 'Linux':
-        # Typical command for launching Google Chrome on Linux
-        chrome_path = '/usr/bin/google-chrome'
-        if os.path.exists(chrome_path):
-            command = [
-                chrome_path,
-                '--app=http://127.0.0.1:8001/scops',
-                '--disable-pinch',
-                '--disable-extensions',
-                '--guest'
-            ]
-        else:
-            # Fallback to chromium if google-chrome is not installed
-            chromium_path = '/usr/bin/chromium-browser'
-            if os.path.exists(chromium_path):
-                command = [
-                    chromium_path,
-                    '--app=http://127.0.0.1:8001/scops',
-                    '--disable-pinch',
-                    '--disable-extensions',
-                    '--guest'
-                ]
-        print("Running command:", command)
-        subprocess.Popen(command)
-        return
-    else:
-        if os.path.exists("C:/Program Files/Google/Chrome/Application/chrome.exe"):
-            command = [
-                "C:/Program Files/Google/Chrome/Application/chrome.exe",
-                '--app=http://127.0.0.1:8001/scops',
-                '--disable-pinch',
-                '--disable-extensions',
-                '--guest'
-            ]
-            print("Running command:", command)
-            subprocess.Popen(command)
-            return
-        elif os.path.exists("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"):
-            command = [
-                "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
-                '--app=http://127.0.0.1:8001/scops',
-                '--disable-pinch',
-                '--disable-extensions',
-                '--guest'
-            ]
-            print("Running command:", command)
-            subprocess.Popen(command)
-            return
-
-    print("Chromium-based browser not found or default browser not set.")
-
+    webbrowser.open_new_tab('http://127.0.0.1:8000')#'https://www.splintercellonline.net/')
 
 def stop_previous_flask_server():
     try:
@@ -194,7 +132,7 @@ def deobfuscate_ip(obfuscated_ip: str) -> str:
 
 @app.route('/scops')
 def scops():
-    return redirect('https://www.splintercellonline.net/')#'http://127.0.0.1:8000')#'https://www.splintercellonline.net/')#'http://127.0.0.1:8001')#'https://www.splintercellonline.net/')
+    return redirect('http://127.0.0.1:8000')#'https://www.splintercellonline.net/')#'http://127.0.0.1:8001')#'https://www.splintercellonline.net/')
 
 
 @app.route('/api/get_id', methods=['GET'])
@@ -203,71 +141,154 @@ def get_id():
     # data = request.json.get('data') # for POST requests with data
     # from python_modules import python_modules
     # go_message = python_modules.main()
-    ip = requests.get('https://api.ipify.org').text.strip()
-    user_id = obfuscate_ip(ip)
+    # ip = requests.get('https://api.ipify.org').text.strip()
+    # user_id = obfuscate_ip(ip)
+    try:
+        with open('wg0.conf','r') as f:
+            config = f.read()
+            # Regular expression to capture PublicKey and AllowedIPs
+            int_regex = r'\[Interface\]\s*PrivateKey\s*=\s*(\S+)\s*Address\s*=\s*(\S+)'
 
-    return jsonify({'user_id': user_id})
+            interfaces = re.findall(int_regex, content)
 
+            if interfaces:
+                for i, interface in enumerate(interfaces, 1):
+                    priv_key, address = interface
 
-@app.route('/api/run_server', methods=['POST'])
-def run_server():
-    global script_process
-    # Get the data from the request
+            peer_regex = r'\[Peer\]\s*PublicKey\s*=\s*(\S+)\s*Endpoint\s*=\s*(\S+)\s*AllowedIPs\s*=\s*(\S+)'
+
+            peers = re.findall(peer_regex, content)
+
+            if peers:
+                for i, peer in enumerate(peers, 1):
+                    pub_key, endpoint, allowed_ips = interface
+
+        return jsonify({
+            'status':'success',
+            'client_ip': address
+            })
+    except Exception as e:
+        return jsonify({
+            'status':'fail',
+            })
+
+@app.route('/api/create_config', methods=['POST'])
+def create_config():
     data = request.json  # for POST requests with data
+    client_ip = data.get('client_ip')
+    private_key = data.get('private_key')
+    server_pub_key = data.get('server_pub_key')
     ps2_ip = data.get('ps2_ip')
-    signal_server = data.get('signal_server')
-    adapter = data.get('adapter')
-    user_id = data.get('user_id')
-    # print(user_id)
-    ip = deobfuscate_ip(user_id)
-    # print(ip)
-    if signal_server == '':
-        signal_server = '20.55.32.50'#'game.scct.airmon-ster.com'
-    ipv4_pattern = re.compile(r'^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
-    if signal_server == '20.55.32.50':
-        url = 'http://'+signal_server+':5000/scops_signal_server'
+    content = f'''
+[Interface]
+PrivateKey = {private_key}
+Address = {client_ip}
+#DNS = 10.0.0.1  # Optional: Use this if you want DNS queries to go through the VPN
 
-        # Replace with the IP address you want to send
-        ip_data = {"ip_address": ip}
-
-        # Send the POST request with the IP address
-        response = requests.post(url, headers={"Content-Type": "application/json"}, data=json.dumps(ip_data))
-
-        # Print the response
-        print(response.status_code)
-        # print(response.json())
-
-
-    # Construct the path to scct.py one directory back
-    scct_script_path = os.path.join(os.path.dirname(__file__), 'scct.py')
-
-    args = [scct_script_path, 'server', '--ps', ps2_ip, '--signal', signal_server, '--timeout', '20', '--nic', adapter]
-    # Start the script in a separate subprocess
-    run_scct_script(args)
-
-    return jsonify({'status': 'done'})
-
+[Peer]
+PublicKey = {server_pub_key}
+Endpoint = {WIREGUARD_SERVER}:51820
+AllowedIPs = {ps2_ip}/24, {WIREGUARD_SERVER}/32  # Sends all traffic through the VPN
+PersistentKeepalive = 25  # Helps with NAT traversal
+    '''
+    try:
+        with open('wg0.conf', 'w') as f:
+            f.write(content)
+        return jsonify({'status':'success'})
+    except Exception as e:
+        return jsonify({'status':'fail','message':'Error: '+e})
 
 @app.route('/api/connect', methods=['POST'])
 def connect():
     global script_process
     # Get the data from the request
     data = request.json  # for POST requests with data
-    host_ip = data.get('host_ip')
-    adapter = data.get('adapter')
-    ipv4_pattern = re.compile(r'^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
+    client_ip = data.get('client_ip')
+    ps2_ip = data.get('ps2_ip')
+    adapter = 'wg0'
+    # ipv4_pattern = re.compile(r'^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
     # count = 0
-    if not ipv4_pattern.match(host_ip) and '.' not in host_ip:
-        host_ip = deobfuscate_ip(host_ip)
+    # if not ipv4_pattern.match(host_ip) and '.' not in host_ip:
+    #     host_ip = deobfuscate_ip(host_ip)
+    try:
+        #detect unix/win os
+        system = get_platform_type()
+        if system == 'Darwin' or system == 'Linux':
+            #run wireguard command
+            command = [
+                'sudo',
+                'wg-quick',
+                'up',
+                'wg0.conf'
+            ]
+            print("Running command:", command)
+            subprocess.Popen(command)
+        else:
+            #run wireguard command
+            command = [
+                'wireguard',
+                '/installtunnelservice',
+                'wg0.conf'
+            ]
+            print("Running command:", command)
+            subprocess.Popen(command)
+            # PowerShell command to get the InterfaceIndex for wg0 interface
+            ps_command = 'Get-NetIPInterface | Where-Object { $_.InterfaceAlias -like "*wg0*" } | Where-Object { $_.AddressFamily -like "*IPv4*" } | Select-Object -ExpandProperty InterfaceIndex'
 
-    # # Construct the path to scct.py one directory back
-    scct_script_path = os.path.join(os.path.dirname(__file__), 'scct.py')
+            # Run the PowerShell command using subprocess
+            result = subprocess.run(["powershell", "-Command", ps_command], capture_output=True, text=True)
+            # Print the output
+            if result.returncode == 0:
+                interface_index = result.stdout.strip()  # Get the interface index from the output
+            else:
+                return jsonify({'status':'fail','message':f"Error: {result.stderr}"})
+            ps_command = f'route add {ps2_ip} mask 255.255.255.255 10.0.0.1 metric 1 if {interface_index}'
+            # Run the PowerShell command using subprocess
+            result = subprocess.run(["powershell", "-Command", ps_command], capture_output=True, text=True)            
+            if result.returncode != 0:
+                return jsonify({'status':'fail','message':f"Error: {result.stderr}"})
 
-    args = [scct_script_path, 'client', '--remote', host_ip, '--nic', adapter]
-    # Start the script in a separate subprocess
-    run_scct_script(args)
+        # # # Construct the path to scct.py one directory back
+        # scct_script_path = os.path.join(os.path.dirname(__file__), 'scct.py')
 
-    return jsonify({'status': 'done'})
+        # args = [scct_script_path, 'client', '--remote', client_ip, '--nic', adapter]
+        # # Start the script in a separate subprocess
+        # run_scct_script(args)
+
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        return jsonify({'status':'fail','message':'Error: '+e})
+
+@app.route('/api/disconnect', methods=['POST'])
+def disconnect():
+    global script_process
+    # Get the data from the request
+    try:
+        #detect unix/win os
+        system = get_platform_type()
+        if system == 'Darwin' or system == 'Linux':
+            #run wireguard command
+            command = [
+                'sudo',
+                'wg-quick',
+                'down',
+                'wg0.conf'
+            ]
+            print("Running command:", command)
+            subprocess.Popen(command)
+        else:
+            #run wireguard command
+            command = [
+                'wireguard',
+                '/uninstalltunnelservice',
+                'wg0.conf'
+            ]
+            print("Running command:", command)
+            subprocess.Popen(command)
+
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        return jsonify({'status':'fail','message':'Error: '+e})
 
 
 @app.route('/api/end_connection', methods=['GET'])

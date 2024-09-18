@@ -108,121 +108,25 @@
         <div class=" min-h-screen">
           <div style="text-align: center;">
             <center>
-              <div v-if="connected !== 'true' " class="h-full">
-                <!-- <img class="mt-4 mask mask-squircle h-72 hover:-translate-y-2 ease-in-out transition"
-                  src="{{url_for('static', filename='scops2_rounded.png')}}" /> -->
-
-                <!-- <button class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100">[[ message ]] </button> -->
-                <!-- <a class="text-lg font-bold">[[ message ]] </a>
-                <br>
-                <br>     -->
-                <!-- <div class="flex flex-col justify-center"> -->
-                <!-- </div> -->
-                <div class="dropdown dropdown-bottom flex justify-center sm:w-1/2 md:w-1/2 pt-4 pb-2 pl-2 pr-2">
-                  <div v-if="adapter == '' " tabindex="0" role="button" class="btn w-full">Select Network Adapter</div>
-                  <div v-else tabindex="0" role="button" class="btn w-full">[[ adapter ]]</div>
-                  <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-full shadow">
-                    <li v-for="item in nics"><a @click="adapter = item">[[ item ]]</a></li>
-                  </ul>
-                </div>
-                <div v-if="connection == 'portforward' " class="justify-center sm:w-1/2 md:w-1/2 space-y-2 ">
-                </div>
-                <div v-else class="justify-center sm:w-1/2 md:w-1/2 space-y-2 pl-2 pr-2">
+              <div class="h-full">
+                <div class="flex flex-row w-full justify-between p-2">
                   <label class="input input-bordered flex items-center gap-2">
-                    PS2 IP:
-                    <input type="text" class="grow font-bold" placeholder="ex. 192.168.0.253" v-model="ps2_ip" />
+                    Server IP: 
+                    <input type="text" class="grow" v-model="wireguard_server" />
                   </label>
                   <label class="input input-bordered flex items-center gap-2">
-                    Signal Server:
-                    <input type="text" class="grow font-bold" v-model="signal_server" />
+                    PS2 IP: 
+                    <input type="text" class="grow" v-model="ps2_ip" />
                   </label>
                 </div>
-
-                <div class="flex flex-row justify-between m-2 p-2  sm:w-1/2 md:w-1/2">
-
-                  <div class="flex pr-4">
-                  <label v-if="connection == 'portforward' " class="text-black text-lg font-bold pt-2 pr-2">Port
-                    Forward</label>
-                  <label v-else class="text-base-300 text-lg pt-2 pr-2">Port Forward</label>
-
-                  <label class="swap swap-flip">
-
-                    <!-- this hidden checkbox controls the state -->
-                    <input type="checkbox" checked>
-
-
-                    <svg class="swap-on fill-current" @click="connection = 'holepunch' "
-                      xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 -960 960 960">
-                      <path xmlns="http://www.w3.org/2000/svg"
-                        d="M200-120q-33 0-56.5-23.5T120-200v-160q0-33 23.5-56.5T200-440h400v-160h80v160h80q33 0 56.5 23.5T840-360v160q0 33-23.5 56.5T760-120H200Zm0-80h560v-160H200v160Zm80-40q17 0 28.5-11.5T320-280q0-17-11.5-28.5T280-320q-17 0-28.5 11.5T240-280q0 17 11.5 28.5T280-240Zm140 0q17 0 28.5-11.5T460-280q0-17-11.5-28.5T420-320q-17 0-28.5 11.5T380-280q0 17 11.5 28.5T420-240Zm140 0q17 0 28.5-11.5T600-280q0-17-11.5-28.5T560-320q-17 0-28.5 11.5T520-280q0 17 11.5 28.5T560-240Zm10-390-58-58q26-24 58-38t70-14q38 0 70 14t58 38l-58 58q-14-14-31.5-22t-38.5-8q-21 0-38.5 8T570-630ZM470-730l-56-56q44-44 102-69t124-25q66 0 124 25t102 69l-56 56q-33-33-76.5-51.5T640-800q-50 0-93.5 18.5T470-730ZM200-200v-160 160Z" />
-                    </svg>
-                    <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg "
-                      @click="connection = 'portforward' " height="48" viewBox="0 -960 960 960" width="48"
-                      fill="#e8eaed">
-                      <path xmlns="http://www.w3.org/2000/svg"
-                        d="M640-80v-90q-56-18-94-64t-44-106h80q8 43 40.5 71.5T700-240h120q25 0 42.5 17.5T880-180v100H640Zm120-200q-33 0-56.5-23.5T680-360q0-33 23.5-56.5T760-440q33 0 56.5 23.5T840-360q0 33-23.5 56.5T760-280ZM360-400q0-150 105-255t255-105v80q-117 0-198.5 81.5T440-400h-80Zm160 0q0-83 58.5-141.5T720-600v80q-50 0-85 35t-35 85h-80ZM80-520v-100q0-25 17.5-42.5T140-680h120q45 0 77.5-28.5T378-780h80q-6 60-44 106t-94 64v90H80Zm120-200q-33 0-56.5-23.5T120-800q0-33 23.5-56.5T200-880q33 0 56.5 23.5T280-800q0 33-23.5 56.5T200-720Z" />
-                    </svg>
-                  </label>
-                  <label v-if="connection == 'holepunch' " class="text-black text-lg font-bold pt-2 pl-2">Hole
-                    Punch</label>
-                  <label v-else class="text-base-300 text-lg pt-2 pl-2">Hole Punch</label>
-                </div>
-                <button v-if="connection == 'holepunch' && ps2_ip && signal_server && adapter" @click="run_server"
-                class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 grow">Host
-                Game
-              </button>
-              <button v-else-if="connection == 'portforward' && adapter" @click="run_server"
-              class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 grow">Host
-              Game
-            </button>
-              <button v-else
-                class="btn btn-disabled text-base-100 grow">Host
-                Game
-              </button>
-
-                </div>
-                <br>
-                <h1 v-if="lobbies.length == 0">No Lobbies Created...</h1>
-                <div v-for="item in lobbies" class="sm:w-1/2 md:w-1/2">
-                  <div v-if="item.host !== this.django_username" class="flex flex-row w-full justify-between p-2">
-                    <h1 class="text-xl font-medium pt-2 pl-2">[[ item.host_username ]]</h1>
-                    <div class="flex flex-row">
-                      <h1 v-if="item.player2" class="pt-2 pr-2 text-xl font-medium">(2/4)</h1>
-                      <h1 v-else-if="item.player3" class="pt-2 pr-2 text-xl font-medium">(3/4)</h1>
-                      <h1 v-else-if="item.player4" class="pt-2 pr-2 text-xl font-medium">(4/4)</h1>
-                      <h1 v-else class="pt-2 pr-2 text-xl font-medium">(1/4)</h1>
-                      <button v-if="adapter" @click="connect(item.endpoint)"
-                      class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100">Join Lobby
-                    </button>
-                    <button v-else
-                    class="btn btn-disabled text-base-100">Join Lobby
-                  </button>
-                  <button v-if="item.spectate_link" 
-                    class="btn bg-orange-500 stroke-orange-500 hover:bg-orange-500 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/50 text-base-100"> Spectate
-                  </button>                  
-                </div>
-                  </div>
-                      <p v-if="item.player2" class="flex justify-content-start pl-4">[[ item.player2 ]]</p>
-                      <p v-if="item.player3" class="flex justify-content-start pl-4">[[ item.player3 ]]</p>
-                      <p v-if="item.player4" class="flex justify-content-start pl-4">[[ item.player4 ]]</p>
-                      <br>
-                  
-                </div>
-              </div>
-              <div v-else class="h-full">
-                <br>
-
-                <div class="flex flex-row justify-center m-2">
-                  <button @click="end_connection()"
-                    class="btn bg-base-300 stroke-base-300 text-base-500 w-full">Leave
-                    Lobby
-                  </button>
-                  <!-- put live stream popup button here -->
-
-                </div>
-                <br>
-                <h3>Content Coming soon...</h3>
-
+                <button v-if="ps2_ip && wireguard_server" @click="connect"
+                  class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 grow">
+                  Connect
+                </button>
+                <button v-else
+                  class="btn btn-disabled text-base-100 grow">
+                  Connect
+                </button>
               </div>
             </center>
           </div>
@@ -297,12 +201,11 @@
     data() {
       return {
         message: 'Welcome to SCOPS2!',
-        user_id: '',
+        host_ip: '',
         activeTab: 2,
         connection: 'portforward',
         ps2_ip: '',
         players: [],
-        host_ip: '',
         connected: 'false',
         data: '',
         discord_id: '',
@@ -314,146 +217,70 @@
         pwa_install: '',
         username: '',
         django_username: '',
-        signal_server: '20.55.32.50',//'game.scct.airmon-ster.com',
-        url: 'https://www.splintercellonline.net',//'http://127.0.0.1:8000',
+        wireguard_server: 'http://20.55.32.50:5000',//'game.scct.airmon-ster.com',
+        url: 'http://127.0.0.1:8000',//'https://www.splintercellonline.net',//'http://127.0.0.1:8000',
         lobby: '',
         lobbies: [],
         nics: [],
         adapter: '',
+        client_ip: '',
+        wireguard_status: '',
+        private_key: '',
+        server_pub_key: '',
+
       }
     },
     methods: {
       setActiveTab(tab) {
         this.activeTab = tab;
       },
-      copy_id(user_id) {
-        navigator.clipboard.writeText(user_id).then(() => {
-          alert(user_id + ' copied to clipboard');
-        }).catch(err => {
-          console.error('Failed to copy: ', err);
-        });
-      },
-      run_server() {
+      async connect() {
         // remove null player entries from player list
         // create content for server arguments
-        if (this.connection == 'portforward') {
-          const content = {
-            host: this.django_username,
-            host_username: this.username,
-            signal_server: this.user_id,
-            adapter: this.adapter,
-          }
-          axios.post(this.url + '/host_room/', content)
-            .then(response => {
-              // handle success
-              console.log(response);
-              this.connected = 'true';
-            }).catch(error => {
-              console.log(error);
-            })
-
-        } else {
-
-          const content = {
-            host: this.django_username,
-            host_username: this.username,
-            signal_server: this.signal_server,
-            ps2_ip: this.ps2_ip,
-            adapter: this.adapter,
-            user_id: this.user_id,
-          }
-          axios.all([
-            axios.post(this.url + '/host_room/', content),
-            axios.post('/api/run_server', content),
-          ])
-            .then(() => {
-              // handle success
-              console.log('successful api call.');
-              this.connected = 'true';
-
-            }).catch(error => {
-              console.log(error);
-            })
+        if (this.client_ip == ''){
+          this.create_wireguard_client()
         }
-      },
-      connect(endpoint) {
-        this.connected = 'true';
-        this.connection = 'client';
-        console.log('Adapter: '+this.adapter)
-        // create content for server arguments
         const content = {
-          host_ip: endpoint,
-          host: this.django_username,
-          adapter: this.adapter,
+          // host: this.django_username,
+          // host_username: this.username,
+          ps2_ip: this.ps2_ip,
+          // adapter: this.adapter,
+          client_ip: this.client_ip,
         }
-        axios.all([
-          axios.post(this.url + '/join_room/', content),
-          axios.post('/api/connect', content)
-        ])
+          const response = await axios.post('/api/connect', content)
           .then(() => {
             // handle success
-            console.log('successful api call.')
-          })
-          .catch(error => {
-            // handle error
+            // this.connected = 'true';
+            this.status = JSON.parse(JSON.stringify(response['data']['status']))
+
+          }).catch(error => {
             console.log(error);
+            this.status = JSON.parse(JSON.stringify(response['data']['status']))
+            this.reason = JSON.parse(JSON.stringify(response['data']['message']))
           })
+
       },
-      end_connection() {
-        const content = {
-          host: this.django_username,
-        }
-        // end process connection
-        if (this.connection !== 'portforward') {
+      async create_wireguard_client(){
+        const response = await axios.get(wireguard_server+'/scops_create_wireguard_client');
+          if (JSON.parse(JSON.stringify(response['data']['status'])) == 'created'){
+            this.client_ip = JSON.parse(JSON.stringify(response['data']['client_ip']))
+            this.private_key = JSON.parse(JSON.stringify(response['data']['private_key']))
+            this.server_pub_key = JSON.parse(JSON.stringify(response['data']['server_pub_key']))
+            const content = {
+              client_ip: this.client_ip,
+              private_key: this.private_key,
+              server_pub_key: this.server_pub_key,
+              ps2_ip: this.ps2_ip,
+            }
+            const response = await axios.post('/api/create_config', content)
+            this.status = JSON.parse(JSON.stringify(response['data']['status']))
+            this.reason = 'Config created successfully.'
+          } else {
+            this.status = JSON.parse(JSON.stringify(response['data']['status']))
+            this.reason = JSON.parse(JSON.stringify(response['data']['message']))
+          }
 
-
-          axios.all([
-            axios.post(this.url + '/leave_lobby/', content),
-            axios.get('/api/end_connection')
-          ])
-            .then(() => {
-              // handle success
-              console.log('successful api call.');
-              this.connected = 'false';
-              this.connection = 'portforward';
-              this.get_lobbies();
-            })
-            .catch(error => {
-              // handle error
-              console.log(error);
-            })
-        } else {
-
-          axios.post(this.url + '/leave_lobby/', content)
-            .then(() => {
-              // handle success
-              console.log('successful api call.');
-              this.connected = 'false';
-              this.connection = 'portforward';
-              this.get_lobbies();
-            })
-            .catch(error => {
-              // handle error
-              console.log(error);
-            })
-        }
       },
-      get_lobbies(){
-        this.lobbies_temp = [];
-        axios.get(this.url + '/get_lobbies/')
-          .then(response => {
-            // console.log(response.data)
-            for (var item of Object.keys(response.data)) {
-              // console.log(JSON.stringify(response.data[item]))
-              this.lobbies_temp.push(response.data[item])
-            }
-            if (this.lobbies_temp !== this.lobbies){
-              this.lobbies = this.lobbies_temp;
-            }
-          })
-          .catch((err) => console.error(err));
-      }
-
     },
     watch: {
 
@@ -474,8 +301,10 @@
         const response = await axios.get('/api/get_id');
         // handle success
         console.log(response);
-        this.user_id = JSON.parse(JSON.stringify(response['data']['user_id']))
-        console.log(this.user_id)
+        if (JSON.parse(JSON.stringify(response['data']['status'])) == 'success'){
+          this.client_ip = JSON.parse(JSON.stringify(response['data']['client_ip']))
+          console.log(this.client_ip)
+        }
       } catch (error) {
         // handle error
         console.log(error);
@@ -498,7 +327,6 @@
         axios.defaults.headers.common['Authorization'] = `Token ${token}`;
         // localStorage.setItem('token', token);
 
-
         console.log('Token stored and set in headers:', token);
 
       } catch (error) {
@@ -513,17 +341,17 @@
         // document.getElementById(email_modal).showModal()
         email_modal.showModal()
       }
-      this.nics = [];
-        axios.get('/api/get_network_adapters')
-          .then(response => {
-            console.log(response.data)
-            console.log(response.data['nics'])
-            for (var item of response.data['nics']) {
-              // console.log(JSON.stringify(response.data[item]))
-              this.nics.push(item)
-            }
-          })
-          .catch((err) => console.error(err));
+      // this.nics = [];
+      // axios.get('/api/get_network_adapters')
+      //   .then(response => {
+      //     console.log(response.data)
+      //     console.log(response.data['nics'])
+      //     for (var item of response.data['nics']) {
+      //       // console.log(JSON.stringify(response.data[item]))
+      //       this.nics.push(item)
+      //     }
+      //   })
+      //   .catch((err) => console.error(err));
 
       this.intervalCheck = setInterval(() => {
         this.lobbies_temp = [];

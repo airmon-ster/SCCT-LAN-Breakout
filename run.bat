@@ -1,6 +1,57 @@
 @echo off
 setlocal enabledelayedexpansion
 
+powershell -Command "$PSVersionTable.PSVersion"
+powershell -Command "winget install --id Microsoft.Powershell --source winget"
+powershell -Command "$PSVersionTable.PSVersion"
+
+REM Check if WinPcap is installed
+wmic product where "name like 'WinPcap%%'" get name >nul 2>&1
+if %errorlevel% == 0 (
+    echo WinPcap detected, uninstalling...
+    wmic product where "name like 'WinPcap%%'" call uninstall /nointeractive
+    echo WinPcap uninstalled.
+) else (
+    echo WinPcap is not installed.
+)
+
+REM Check if NPCAP is installed
+reg query "HKLM\SOFTWARE\WOW6432Node\Npcap" >nul 2>&1
+if %errorlevel% == 0 (
+    echo NPCAP is already installed.
+) else (
+    echo NPCAP not found, downloading and installing...
+    set npcap_installer=npcap-1.70.exe
+    powershell -Command "Invoke-WebRequest -Uri https://nmap.org/npcap/dist/npcap-1.70.exe -OutFile %npcap_installer%"
+    
+    echo Installing NPCAP...
+    start /wait %npcap_installer% /SILENT
+    
+    echo Cleaning up NPCAP installer...
+    del %npcap_installer%
+    
+    echo NPCAP installation completed.
+)
+
+REM Check if WireGuard is installed
+reg query "HKLM\SOFTWARE\WireGuard" >nul 2>&1
+if %errorlevel% == 0 (
+    echo WireGuard is already installed.
+) else (
+    echo WireGuard not found, downloading and installing...
+    set wg_installer=wireguard-installer.msi
+    powershell -Command "Invoke-WebRequest -Uri https://download.wireguard.com/windows-client/wireguard-installer.msi -OutFile %wg_installer%"
+    
+    echo Installing WireGuard...
+    start /wait msiexec /i %wg_installer% /quiet
+    
+    echo Cleaning up WireGuard installer...
+    del %wg_installer%
+    
+    echo WireGuard installation completed.
+)
+
+
 :: Set repository owner and name
 set REPO_OWNER="airmon-ster"
 set REPO_NAME="SCCT-LAN-Breakout"
