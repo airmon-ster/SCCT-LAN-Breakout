@@ -28,17 +28,17 @@ def main() -> None:
             if args.nic != '' and args.hostname != '':
                 args.hostname=str(args.hostname).encode('ascii')
                 print(args.hostname)
-                if args.game == 'CT':
+                if args.game == 'CT' or args.game == 'PT':
                     Client(remote=args.remote, iface=args.nic, hostname=args.hostname).listen()
                 elif args.game == 'DA':
                     DAClient(remote=args.remote, iface=args.nic, hostname=args.hostname).listen()
             elif args.nic != '':
-                if args.game == 'CT':
+                if args.game == 'CT' or args.game == 'PT':
                     Client(remote=args.remote, iface=args.nic).listen()
                 elif args.game == 'DA':
                     DAClient(remote=args.remote, iface=args.nic).listen()
             else:
-                if args.game == 'CT':
+                if args.game == 'CT' or args.game == 'PT':
                     Client(remote=args.remote).listen()
                 elif args.game == 'DA':
                     DAClient(remote=args.remote).listen()

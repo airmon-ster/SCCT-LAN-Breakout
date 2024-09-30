@@ -118,24 +118,48 @@
                 <br>     -->
                 <!-- <div class="flex flex-col justify-center"> -->
                 <!-- </div> -->
-                <div class="dropdown dropdown-bottom flex justify-center sm:w-1/2 md:w-1/2 pt-4 pb-2 pl-2 pr-2">
+                <!-- <div class="dropdown dropdown-bottom flex justify-center sm:w-1/2 md:w-1/2 pt-4 pb-2 pl-2 pr-2">
                   <div v-if="game_selection == '' " tabindex="0" role="button" class="btn w-full">Select Game</div>
                   <div v-else tabindex="0" role="button" class="btn w-full">[[ game_selection ]]</div>
                   <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-full shadow">
                     <li><a @click="game_selection = 'CT' ">Chaos Theory </a></li>
                     <li><a @click="game_selection = 'DA' ">Double Agent </a></li>
+                    <li><a @click="game_selection = 'PT' ">Pandora Tomorrow </a></li>
                   </ul>
+                </div> -->
+                <div class="flex flex-row justify-between space-x-2 w-full sm:w-1/2 md:w-1/2 p-2">
+
+                  <label class="form-control w-full">
+                    <div class="label">
+                      <span class="label-text">Select Game</span>
+                    </div>
+                    <select v-model="game_selection" class="select select-success w-full">
+                      <option disabled selected>Select Game</option>
+                      <option>Chaos Theory</option>
+                      <option>Double Agent</option>
+                      <option>Pandora Tomorrow</option>
+                    </select>
+                  </label>
+                  <label class="form-control w-full">
+                    <div class="label">
+                      <span class="label-text">Select Adapter</span>
+                    </div>
+                    <select v-model="adapter" class="select select-success w-full">
+                      <option disabled selected>Select Adapter</option>
+                      <option v-for="item in nics">[[ item ]]</option>
+                    </select>
+                  </label>
                 </div>
-                <div class="dropdown dropdown-bottom flex justify-center sm:w-1/2 md:w-1/2 pb-2 pl-2 pr-2">
+                  <!-- <div class="dropdown dropdown-bottom flex justify-center sm:w-1/2 md:w-1/2 pb-2 pl-2 pr-2">
                   <div v-if="adapter == '' " tabindex="0" role="button" class="btn w-full">Select Network Adapter</div>
                   <div v-else tabindex="0" role="button" class="btn w-full">[[ adapter ]]</div>
                   <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-full shadow">
                     <li v-for="item in nics"><a @click="adapter = item">[[ item ]]</a></li>
                   </ul>
+                </div> -->
+                <div v-if="connection == 'portforward' " class="justify-center sm:w-1/2 md:w-1/2 space-y-2">
                 </div>
-                <div v-if="connection == 'portforward' " class="justify-center sm:w-1/2 md:w-1/2 space-y-2 ">
-                </div>
-                <div v-else class="justify-center sm:w-1/2 md:w-1/2 space-y-2 pl-2 pr-2">
+                <div v-else class="justify-center sm:w-1/2 md:w-1/2 space-y-2 pl-2 pr-2 pb-2">
                   <label class="input input-bordered flex items-center gap-2">
                     PS2 IP:
                     <input type="text" class="grow font-bold" placeholder="ex. 192.168.0.253" v-model="ps2_ip" />
@@ -146,16 +170,15 @@
                   </label>
                 </div>
 
-                <div class="flex flex-row justify-between m-2 p-2  sm:w-1/2 md:w-1/2">
+                <div class="flex flex-row justify-between  sm:w-1/2 md:w-1/2 pl-2 pr-2">
 
                   <div class="flex pr-4">
                   <label v-if="connection == 'portforward' " class="text-black text-lg font-bold pt-2 pr-2">Port
                     Forward</label>
                   <label v-else class="text-base-300 text-lg pt-2 pr-2">Port Forward</label>
 
-                  <label class="swap swap-flip">
+                  <!-- <label class="swap swap-flip">
 
-                    <!-- this hidden checkbox controls the state -->
                     <input type="checkbox" checked>
 
 
@@ -170,7 +193,12 @@
                       <path xmlns="http://www.w3.org/2000/svg"
                         d="M640-80v-90q-56-18-94-64t-44-106h80q8 43 40.5 71.5T700-240h120q25 0 42.5 17.5T880-180v100H640Zm120-200q-33 0-56.5-23.5T680-360q0-33 23.5-56.5T760-440q33 0 56.5 23.5T840-360q0 33-23.5 56.5T760-280ZM360-400q0-150 105-255t255-105v80q-117 0-198.5 81.5T440-400h-80Zm160 0q0-83 58.5-141.5T720-600v80q-50 0-85 35t-35 85h-80ZM80-520v-100q0-25 17.5-42.5T140-680h120q45 0 77.5-28.5T378-780h80q-6 60-44 106t-94 64v90H80Zm120-200q-33 0-56.5-23.5T120-800q0-33 23.5-56.5T200-880q33 0 56.5 23.5T280-800q0 33-23.5 56.5T200-720Z" />
                     </svg>
-                  </label>
+                  </label> -->
+                  <input
+                    type="checkbox"
+                    class="toggle border-green-500 bg-green-500  hover:bg-green-700 flex justify mt-3"
+                    @click="switch_connection"
+                     />
                   <label v-if="connection == 'holepunch' " class="text-black text-lg font-bold pt-2 pl-2">Hole
                     Punch</label>
                   <label v-else class="text-base-300 text-lg pt-2 pl-2">Hole Punch</label>
@@ -332,6 +360,13 @@
       }
     },
     methods: {
+      switch_connection(){
+        if (this.connection == 'holepunch'){
+          this.connection = 'portforward';
+        } else {
+          this.connection = 'holepunch';
+        }
+      },
       setActiveTab(tab) {
         this.activeTab = tab;
       },

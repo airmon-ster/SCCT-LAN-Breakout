@@ -266,8 +266,15 @@ def connect():
     adapter = data.get('adapter')
     host_username = data.get('host_username')
     host_username = host_username[:7]
-    print(host_username)
     game_selection = data.get('game_selection')
+    if game_selection == 'Chaos Theory':
+        game_selection = 'CT'
+    elif game_selection == 'Double Agent':
+        game_selection = 'DA'
+    elif game_selection == 'Pandora Tomorrow':
+        game_selection = 'PT'
+    else:
+        return jsonify({'status': 'fail', 'message':'Error with game selection.'})
     ipv4_pattern = re.compile(r'^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
     # count = 0
     if not ipv4_pattern.match(host_ip) and '.' not in host_ip:
