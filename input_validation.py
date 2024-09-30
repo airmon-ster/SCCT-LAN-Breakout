@@ -54,7 +54,7 @@ def validate_client_parameters(args: argparse.Namespace) -> bool:
         args.remote = remote
         if args.hostname:
             if len(args.hostname) > 7:
-                print('Hostname too long. Keep under 8 characters...')
+                print('Hostname: '+ args.hostname +' too long. Keep under 8 characters...')
                 return False
         if args.game:
             if args.game.upper() != 'CT' and args.game.upper() != 'DA':

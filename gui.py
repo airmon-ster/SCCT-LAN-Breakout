@@ -265,6 +265,8 @@ def connect():
     host_ip = data.get('host_ip')
     adapter = data.get('adapter')
     host_username = data.get('host_username')
+    host_username = host_username[:7]
+    print(host_username)
     game_selection = data.get('game_selection')
     ipv4_pattern = re.compile(r'^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
     # count = 0
