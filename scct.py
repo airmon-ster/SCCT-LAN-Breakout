@@ -4,7 +4,7 @@ import asyncio
 
 from server import Server
 from client import Client
-
+from da_client import DAClient
 
 def main() -> None:
     try:
@@ -17,15 +17,31 @@ def main() -> None:
         parser.add_argument('--signal', type=str, help='Space separated hostnames or IPs of the players joining the game')
         parser.add_argument('--timeout', type=int, help='The timeout for the server hole punch method keep alives', default=20)
         parser.add_argument('--nic', type=str, help='The active network adapter to use.')
+        parser.add_argument('--hostname', type=str, help='The host discord name.')
+        parser.add_argument('--game', type=str, help='PS2 Game selection (CT/DA).')
+        # parser.add_argument('--port', type=str, help='Port to send traffic to server.')
         args: argparse.Namespace = parser.parse_args()
 
         if args.action == 'client':
             if not validate_client_parameters(args=args):
                 return
-            if args.nic != '':
-                Client(remote=args.remote, iface=args.nic).listen()
+            if args.nic != '' and args.hostname != '':
+                args.hostname=str(args.hostname).encode('ascii')
+                print(args.hostname)
+                if args.game == 'CT':
+                    Client(remote=args.remote, iface=args.nic, hostname=args.hostname).listen()
+                elif args.game == 'DA':
+                    DAClient(remote=args.remote, iface=args.nic, hostname=args.hostname).listen()
+            elif args.nic != '':
+                if args.game == 'CT':
+                    Client(remote=args.remote, iface=args.nic).listen()
+                elif args.game == 'DA':
+                    DAClient(remote=args.remote, iface=args.nic).listen()
             else:
-                Client(remote=args.remote).listen()
+                if args.game == 'CT':
+                    Client(remote=args.remote).listen()
+                elif args.game == 'DA':
+                    DAClient(remote=args.remote).listen()
 
         elif args.action == 'server':
             if not validate_server_parameters(args=args):

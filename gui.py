@@ -14,6 +14,7 @@ import platform
 from flask_cors import CORS
 import psutil
 import json
+import webbrowser
 
 # WORKSAFE=False
 # try:
@@ -27,73 +28,75 @@ def get_platform_type():
     system = platform.system()
     return system
 
-
 def run_with_switches(system):
-    # Check the default browser
-    if system == 'Darwin':
-        # Path for Google Chrome on macOS
-        chrome_path = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-        if os.path.exists(chrome_path):
-            command = [
-                chrome_path,
-                '--app=http://127.0.0.1:8001/scops',
-                '--disable-pinch',
-                '--disable-extensions',
-                '--guest'
-            ]
-        print("Running command:", command)
-        subprocess.Popen(command)
-        return
-    elif system == 'Linux':
-        # Typical command for launching Google Chrome on Linux
-        chrome_path = '/usr/bin/google-chrome'
-        if os.path.exists(chrome_path):
-            command = [
-                chrome_path,
-                '--app=http://127.0.0.1:8001/scops',
-                '--disable-pinch',
-                '--disable-extensions',
-                '--guest'
-            ]
-        else:
-            # Fallback to chromium if google-chrome is not installed
-            chromium_path = '/usr/bin/chromium-browser'
-            if os.path.exists(chromium_path):
-                command = [
-                    chromium_path,
-                    '--app=http://127.0.0.1:8001/scops',
-                    '--disable-pinch',
-                    '--disable-extensions',
-                    '--guest'
-                ]
-        print("Running command:", command)
-        subprocess.Popen(command)
-        return
-    else:
-        if os.path.exists("C:/Program Files/Google/Chrome/Application/chrome.exe"):
-            command = [
-                "C:/Program Files/Google/Chrome/Application/chrome.exe",
-                '--app=http://127.0.0.1:8001/scops',
-                '--disable-pinch',
-                '--disable-extensions',
-                '--guest'
-            ]
-            print("Running command:", command)
-            subprocess.Popen(command)
-            return
-        elif os.path.exists("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"):
-            command = [
-                "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
-                '--app=http://127.0.0.1:8001/scops',
-                '--disable-pinch',
-                '--disable-extensions',
-                '--guest'
-            ]
-            print("Running command:", command)
-            subprocess.Popen(command)
-            return
+    webbrowser.open_new_tab('https://www.splintercellonline.net/')
 
-    print("Chromium-based browser not found or default browser not set.")
+# def run_with_switches(system):
+#     # Check the default browser
+#     if system == 'Darwin':
+#         # Path for Google Chrome on macOS
+#         chrome_path = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+#         if os.path.exists(chrome_path):
+#             command = [
+#                 chrome_path,
+#                 '--app=http://127.0.0.1:8001/scops',
+#                 '--disable-pinch',
+#                 '--disable-extensions',
+#                 '--guest'
+#             ]
+#         print("Running command:", command)
+#         subprocess.Popen(command)
+#         return
+#     elif system == 'Linux':
+#         # Typical command for launching Google Chrome on Linux
+#         chrome_path = '/usr/bin/google-chrome'
+#         if os.path.exists(chrome_path):
+#             command = [
+#                 chrome_path,
+#                 '--app=http://127.0.0.1:8001/scops',
+#                 '--disable-pinch',
+#                 '--disable-extensions',
+#                 '--guest'
+#             ]
+#         else:
+#             # Fallback to chromium if google-chrome is not installed
+#             chromium_path = '/usr/bin/chromium-browser'
+#             if os.path.exists(chromium_path):
+#                 command = [
+#                     chromium_path,
+#                     '--app=http://127.0.0.1:8001/scops',
+#                     '--disable-pinch',
+#                     '--disable-extensions',
+#                     '--guest'
+#                 ]
+#         print("Running command:", command)
+#         subprocess.Popen(command)
+#         return
+#     else:
+#         if os.path.exists("C:/Program Files/Google/Chrome/Application/chrome.exe"):
+#             command = [
+#                 "C:/Program Files/Google/Chrome/Application/chrome.exe",
+#                 '--app=http://127.0.0.1:8001/scops',
+#                 '--disable-pinch',
+#                 '--disable-extensions',
+#                 '--guest'
+#             ]
+#             print("Running command:", command)
+#             subprocess.Popen(command)
+#             return
+#         elif os.path.exists("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"):
+#             command = [
+#                 "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+#                 '--app=http://127.0.0.1:8001/scops',
+#                 '--disable-pinch',
+#                 '--disable-extensions',
+#                 '--guest'
+#             ]
+#             print("Running command:", command)
+#             subprocess.Popen(command)
+#             return
+
+#     print("Chromium-based browser not found or default browser not set.")
 
 
 def stop_previous_flask_server():
@@ -223,6 +226,12 @@ def run_server():
     # print(ip)
     if signal_server == '':
         signal_server = '20.55.32.50'#'game.scct.airmon-ster.com'
+    if 'http://' in signal_server:
+        signal_server = signal_server.split('http://')[1]
+    elif 'https://' in signal_server:
+        signal_server = signal_server.split('https://')[1]
+    if '/' in signal_server:
+        signal_server = signal_server.split('/')[0]
     ipv4_pattern = re.compile(r'^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
     if signal_server == '20.55.32.50':
         url = 'http://'+signal_server+':5000/scops_signal_server'
@@ -234,8 +243,8 @@ def run_server():
         response = requests.post(url, headers={"Content-Type": "application/json"}, data=json.dumps(ip_data))
 
         # Print the response
-        print(response.status_code)
-        # print(response.json())
+        # print(response.status_code)
+        print(response.json()['message'])
 
 
     # Construct the path to scct.py one directory back
@@ -255,6 +264,8 @@ def connect():
     data = request.json  # for POST requests with data
     host_ip = data.get('host_ip')
     adapter = data.get('adapter')
+    host_username = data.get('host_username')
+    game_selection = data.get('game_selection')
     ipv4_pattern = re.compile(r'^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
     # count = 0
     if not ipv4_pattern.match(host_ip) and '.' not in host_ip:
@@ -263,7 +274,8 @@ def connect():
     # # Construct the path to scct.py one directory back
     scct_script_path = os.path.join(os.path.dirname(__file__), 'scct.py')
 
-    args = [scct_script_path, 'client', '--remote', host_ip, '--nic', adapter]
+    args = [scct_script_path, 'client', '--remote', host_ip, '--nic', adapter, '--game', game_selection, '--hostname', host_username]
+    
     # Start the script in a separate subprocess
     run_scct_script(args)
 

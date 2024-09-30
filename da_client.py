@@ -25,20 +25,29 @@ import base64
 # trailer - 0000863c - 4 bytes
 
 #CT
-RES_ACTION: bytes = b'\x53\x53\x52\x56\x49\x4e\x46\x4f\x00\x00\x00\x00'  # SSRVINFO
-RES_TRAILER: bytes = b'\x00\x00\x86\x3c'
+# RES_ACTION: bytes = b'\x53\x53\x52\x56\x49\x4e\x46\x4f\x00\x00\x00\x00'  # SSRVINFO
+# RES_TRAILER: bytes = b'\x00\x00\x86\x3c'
+# PLAYER_HOST: bytes = b'\x53\x43\x43\x54\x50\x53\x32'  # SCCTPS2
+# GAME_INFO: bytes = (b'\xff\xff\xff\xff\x04\x00\x00\x00\x01\x00\x00\x00\x0a\x00\x00\x00\x00\x00\x00\x00'
+#                     b'\x49\x4e\x49\x30\x31\x00\x08\x3d\x43\x69\x6e\x65\x6d\x61\x00\x3e\x00\x00\x38\x43\x00\x00'
+#                     b'\x40\x43\x00\x00\x80\x42\x00\x00\x80\x43\x00\x00\xc0\x42\x00\x00\x08\x3d') + PLAYER_HOST + b'\x00' * (20-len(PLAYER_HOST))#13
+#DA
+RES_ACTION: bytes = b'\x53\x53\x52\x56\x49\x4e\x46\x4f\x00\x00\x00\x00'  # 'SSRVINFO\x00\x00\x00\x00'
+RES_TRAILER: bytes = b'\x00\xe0\x88\x3c'  # Updated trailer from new packet
 PLAYER_HOST: bytes = b'\x53\x43\x43\x54\x50\x53\x32'  # SCCTPS2
-GAME_INFO: bytes = (b'\xff\xff\xff\xff\x04\x00\x00\x00\x01\x00\x00\x00\x0a\x00\x00\x00\x00\x00\x00\x00'
-                    b'\x49\x4e\x49\x30\x31\x00\x08\x3d\x43\x69\x6e\x65\x6d\x61\x00\x3e\x00\x00\x38\x43\x00\x00'
-                    b'\x40\x43\x00\x00\x80\x42\x00\x00\x80\x43\x00\x00\xc0\x42\x00\x00\x08\x3d')
+GAME_INFO: bytes = (b'\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00\x00'
+                b'\x00\x00\x00\x00\x00\x00\x43\x48\x55\x30\x30\x00\xe8\x37\x43\x48'
+                b'\x55\x52\x43\x48\x00\x3d\x89\x88\x08\x3e\x00\x00\x08\x3d\x00\x00'
+                b'\x08\x3d\x9a\x99\x19\x3e\x00\x00\xc2\x43\x00\x00\x40\x43')
+            
 
 @dataclass
-class Client:
+class DAClient:
     remote: SimpleNamespace
     iface: str
     hostname: bytes = field(default=PLAYER_HOST)
-    res_action: bytes = field(default=RES_ACTION)
-    res_trailer: bytes = field(default=RES_TRAILER)
+    res_action: bytes  = field(default=RES_ACTION)
+    res_trailer: bytes  = field(default=RES_TRAILER)
     game_info: bytes = field(default=GAME_INFO)
     response_counter: int = 0
 
@@ -47,7 +56,6 @@ class Client:
             if self.iface != '':
                 sniff(iface=self.iface, lfilter=lambda x: x.haslayer(UDP) and x[UDP].sport == 1001 and x[Ether].dst == 'ff:ff:ff:ff:ff:ff' and len(x) == 70,#70,
                     prn=lambda x: parse_request_packet(x, client=self))
-                # print(len(x))
             else:
                 sniff(lfilter=lambda x: x.haslayer(UDP) and x[UDP].sport == 1001 and x[Ether].dst == 'ff:ff:ff:ff:ff:ff' and len(x) == 70,#70,
                     prn=lambda x: parse_request_packet(x, client=self))
@@ -57,14 +65,13 @@ class Client:
     def __post_init__(self) -> None:
         build_client_banner(remote=self.remote)
 
-def send_response_packet(preamble: bytes, postamble: bytes, client: Client, broadcast_addr: str) -> None:
+def send_response_packet(preamble: bytes, client: DAClient, broadcast_addr: str) -> None:
     try:
         # create the response packet with a dest of x.x.x.x and a source of the external game host ip
         # set the broadcast address to the common local network broadcast addresseses if LOCAL_BROADCAST_ADDRESS is not set
         res_pkt = Ether(dst='ff:ff:ff:ff:ff:ff')/IP(dst=broadcast_addr, src=client.remote.ip)/UDP(sport=1001, dport=1001)/Raw()
         # poplate the load with the response fields via offsets
-        new_payload = client.res_action + preamble + client.game_info + client.hostname + (b'\x00' * (20-len(client.hostname))) + postamble + client.res_trailer
-
+        new_payload = client.res_action + preamble + client.game_info + client.hostname + (b'\x00' * (7-len(client.hostname))) +b'\x43\x00\x00\xc0\x42\x00\x00\x08\x3d\x00\x00\x00\x00\xdd\x38\xc8\x45\x00\x00\x88\x3c\x0a\x00\x00\x00\x02\x00\x00\x00' + client.res_trailer #DA
         res_pkt[Raw].load = new_payload
         # send the response packet
         if client.iface != '':
@@ -74,7 +81,7 @@ def send_response_packet(preamble: bytes, postamble: bytes, client: Client, broa
     except Exception as e:
         print(f"Error in send_response_packet: {repr(e)}")
 
-def parse_request_packet(pkt, client: Client) -> None:
+def parse_request_packet(pkt, client: DAClient) -> None:
     try:
         # parse the packet load
         req_load: bytes = pkt[UDP].load
@@ -83,12 +90,10 @@ def parse_request_packet(pkt, client: Client) -> None:
         # parse the request via byte offsets
         # req_action = req_load[0:9] # unused
         # counter_inc = req_load[9:12] # unused
-        preamble: bytes = req_load[12:24]#12:24
-        postamble: bytes = req_load[24:28]
+        preamble: bytes = req_load[12:24]#12:24 # This includes the bytes \x87\xd6\xf8\xfb and the rest of the preamble
 
         # send the response packet
         send_response_packet(preamble=preamble,
-                             postamble=postamble,
                              client=client,
                              broadcast_addr=broadcast_addr)
         print(f"[*] FIND_REQUEST packet found and response sent. The game should now appear in your game list as Host: SCCTPS2. Count={str(client.response_counter)}", end='\r')
@@ -110,5 +115,5 @@ def build_client_banner(remote: SimpleNamespace) -> None:
     print("SCCTP Server Emulator")
     print("---------------------")
     print(f"EXTERNAL_GAME_HOST_ID: {obfuscate_ip(remote.ip) if remote.domain is None else remote.domain}")
-    print("Listening for Chaos Theory packets...\n")
+    print("Listening for Double Agent packets...\n")
     return

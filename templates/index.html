@@ -119,6 +119,14 @@
                 <!-- <div class="flex flex-col justify-center"> -->
                 <!-- </div> -->
                 <div class="dropdown dropdown-bottom flex justify-center sm:w-1/2 md:w-1/2 pt-4 pb-2 pl-2 pr-2">
+                  <div v-if="game_selection == '' " tabindex="0" role="button" class="btn w-full">Select Game</div>
+                  <div v-else tabindex="0" role="button" class="btn w-full">[[ game_selection ]]</div>
+                  <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-full shadow">
+                    <li><a @click="game_selection = 'CT' ">Chaos Theory </a></li>
+                    <li><a @click="game_selection = 'DA' ">Double Agent </a></li>
+                  </ul>
+                </div>
+                <div class="dropdown dropdown-bottom flex justify-center sm:w-1/2 md:w-1/2 pb-2 pl-2 pr-2">
                   <div v-if="adapter == '' " tabindex="0" role="button" class="btn w-full">Select Network Adapter</div>
                   <div v-else tabindex="0" role="button" class="btn w-full">[[ adapter ]]</div>
                   <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-full shadow">
@@ -167,11 +175,11 @@
                     Punch</label>
                   <label v-else class="text-base-300 text-lg pt-2 pl-2">Hole Punch</label>
                 </div>
-                <button v-if="connection == 'holepunch' && ps2_ip && signal_server && adapter" @click="run_server"
+                <button v-if="connection == 'holepunch' && ps2_ip && signal_server && adapter && game_selection" @click="run_server"
                 class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 grow">Host
                 Game
               </button>
-              <button v-else-if="connection == 'portforward' && adapter" @click="run_server"
+              <button v-else-if="connection == 'portforward' && adapter && game_selection" @click="run_server"
               class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100 grow">Host
               Game
             </button>
@@ -191,7 +199,7 @@
                       <h1 v-else-if="item.player3" class="pt-2 pr-2 text-xl font-medium">(3/4)</h1>
                       <h1 v-else-if="item.player4" class="pt-2 pr-2 text-xl font-medium">(4/4)</h1>
                       <h1 v-else class="pt-2 pr-2 text-xl font-medium">(1/4)</h1>
-                      <button v-if="adapter" @click="connect(item.endpoint)"
+                      <button v-if="adapter && game_selection" @click="connect(item.endpoint,item.host_username)"
                       class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100">Join Lobby
                     </button>
                     <button v-else
@@ -320,6 +328,7 @@
         lobbies: [],
         nics: [],
         adapter: '',
+        game_selection: '',
       }
     },
     methods: {
@@ -376,7 +385,7 @@
             })
         }
       },
-      connect(endpoint) {
+      connect(endpoint,host_username) {
         this.connected = 'true';
         this.connection = 'client';
         console.log('Adapter: '+this.adapter)
@@ -384,7 +393,9 @@
         const content = {
           host_ip: endpoint,
           host: this.django_username,
+          host_username: host_username,
           adapter: this.adapter,
+          game_selection: this.game_selection,
         }
         axios.all([
           axios.post(this.url + '/join_room/', content),

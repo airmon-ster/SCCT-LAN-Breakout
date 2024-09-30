@@ -1,6 +1,21 @@
 @echo off
 setlocal enabledelayedexpansion
 
+REM Define the current batch file path for shortcut creation
+SET "bat_file_path=%~dp0run.bat"
+
+REM Create a desktop shortcut for run.bat if it doesn't already exist
+powershell -Command ^
+$desktop = [Environment]::GetFolderPath('Desktop'); ^
+$shortcutPath = Join-Path $desktop 'run.lnk'; ^
+$targetPath = '%bat_file_path%'; ^
+$WScriptShell = New-Object -ComObject WScript.Shell; ^
+$shortcut = $WScriptShell.CreateShortcut($shortcutPath); ^
+$shortcut.TargetPath = $targetPath; ^
+$shortcut.WorkingDirectory = '%~dp0'; ^
+$shortcut.Save(); ^
+Write-Host "Desktop shortcut created."
+
 :: Set repository owner and name
 set REPO_OWNER="airmon-ster"
 set REPO_NAME="SCCT-LAN-Breakout"
