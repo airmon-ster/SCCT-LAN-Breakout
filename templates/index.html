@@ -133,7 +133,7 @@
                     <div class="label">
                       <span class="label-text">Select Game</span>
                     </div>
-                    <select v-model="game_selection" class="select select-success w-full">
+                    <select v-model="game_selection" class="select select-success hover:border-green-400 w-full">
                       <option disabled selected>Select Game</option>
                       <option>Chaos Theory</option>
                       <option>Double Agent</option>
@@ -144,7 +144,7 @@
                     <div class="label">
                       <span class="label-text">Select Adapter</span>
                     </div>
-                    <select v-model="adapter" class="select select-success w-full">
+                    <select v-model="adapter" class="select select-success hover:border-green-400 w-full">
                       <option disabled selected>Select Adapter</option>
                       <option v-for="item in nics">[[ item ]]</option>
                     </select>
@@ -160,11 +160,11 @@
                 <div v-if="connection == 'portforward' " class="justify-center sm:w-1/2 md:w-1/2 space-y-2">
                 </div>
                 <div v-else class="justify-center sm:w-1/2 md:w-1/2 space-y-2 pl-2 pr-2 pb-2">
-                  <label class="input input-bordered flex items-center gap-2">
+                  <label class="input input-bordered input-success hover:border-green-400 flex items-center gap-2">
                     PS2 IP:
                     <input type="text" class="grow font-bold" placeholder="ex. 192.168.0.253" v-model="ps2_ip" />
                   </label>
-                  <label class="input input-bordered flex items-center gap-2">
+                  <label class="input input-bordered input-success hover:border-green-400 flex items-center gap-2">
                     Signal Server:
                     <input type="text" class="grow font-bold" v-model="signal_server" />
                   </label>
@@ -196,7 +196,7 @@
                   </label> -->
                   <input
                     type="checkbox"
-                    class="toggle border-green-500 bg-green-500  hover:bg-green-700 flex justify mt-3"
+                    class="toggle border-green-600 bg-green-600  hover:bg-green-400 flex justify mt-3"
                     @click="switch_connection"
                      />
                   <label v-if="connection == 'holepunch' " class="text-black text-lg font-bold pt-2 pl-2">Hole
@@ -227,7 +227,7 @@
                       <h1 v-else-if="item.player3" class="pt-2 pr-2 text-xl font-medium">(3/4)</h1>
                       <h1 v-else-if="item.player4" class="pt-2 pr-2 text-xl font-medium">(4/4)</h1>
                       <h1 v-else class="pt-2 pr-2 text-xl font-medium">(1/4)</h1>
-                      <button v-if="adapter && game_selection" @click="connect(item.endpoint,item.host_username)"
+                      <button v-if="adapter && game_selection" @click="connect(item.endpoint,item.host_username,item)"
                       class="btn bg-green-500 stroke-green-500 hover:bg-green-500 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/50 text-base-100">Join Lobby
                     </button>
                     <button v-else
@@ -248,6 +248,7 @@
               <div v-else class="h-full">
                 <br>
 
+                <a class="text-2xl">[[ current_lobby.host_username ]]'s Lobby - [[ current_lobby.selected_game ]]</a>
                 <div class="flex flex-row justify-center m-2">
                   <button @click="end_connection()"
                     class="btn bg-base-300 stroke-base-300 text-base-500 w-full">Leave
@@ -257,8 +258,18 @@
 
                 </div>
                 <br>
-                <h3>Content Coming soon...</h3>
-
+                <div>
+                  <h3 class="text-lg">[[ current_lobby.host_username ]]</h3>
+                </div>
+                <div>
+                  <h3 class="text-lg">[[ current_lobby.player2 ]]</h3>
+                </div>
+                <div>
+                  <h3 class="text-lg">[[ current_lobby.player3 ]]</h3>
+                </div>
+                <div>
+                  <h3 class="text-lg">[[ current_lobby.player4 ]]</h3>
+                </div>
               </div>
             </center>
           </div>
@@ -357,6 +368,7 @@
         nics: [],
         adapter: '',
         game_selection: '',
+        current_lobby: '',
       }
     },
     methods: {
@@ -386,6 +398,7 @@
             host_username: this.username,
             signal_server: this.user_id,
             adapter: this.adapter,
+            selected_game: this.selected_game,
           }
           axios.post(this.url + '/host_room/', content)
             .then(response => {
@@ -405,6 +418,7 @@
             ps2_ip: this.ps2_ip,
             adapter: this.adapter,
             user_id: this.user_id,
+            selected_game: this.selected_game,
           }
           axios.all([
             axios.post(this.url + '/host_room/', content),
@@ -420,9 +434,10 @@
             })
         }
       },
-      connect(endpoint,host_username) {
+      connect(endpoint,host_username,lobby) {
         this.connected = 'true';
         this.connection = 'client';
+        this.current_lobby = lobby;
         console.log('Adapter: '+this.adapter)
         // create content for server arguments
         const content = {
@@ -446,6 +461,7 @@
           })
       },
       end_connection() {
+        this.current_lobby = '';
         const content = {
           host: this.django_username,
         }
@@ -502,7 +518,6 @@
 
     },
     watch: {
-
     },
     async created() {
       console.log("{{data}}")
@@ -588,7 +603,19 @@
       }, 10000)
     },
     computed: {
-
+      connected() {
+      if (this.connected == 'true') {
+        this.intervalCheck = setInterval(() => {
+        axios.get(this.url + '/get_current_lobby/')
+          .then(response => {
+            // console.log(response.data)
+            if (response != this.current_lobby){
+              this.current_lobby = response;
+            }
+          })
+          .catch((err) => console.error(err));
+      }, 10000)      }
+    }
     }
 
   }).mount('#index_app2')
