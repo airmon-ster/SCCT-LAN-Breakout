@@ -5,7 +5,7 @@
 import subprocess
 import os
 import sys
-from flask import Flask, request, jsonify, render_template, redirect
+from flask import Flask, request, jsonify, render_template, render_template_string, redirect
 # import numpy as np
 import requests
 import base64
@@ -179,7 +179,7 @@ def index():
     #     for line in file:
     #         html += line
 
-    #     return render_template_string(html)
+    # return render_template_string(html, data=data)
     return render_template('index.html', data=data)
 
 
@@ -197,7 +197,7 @@ def deobfuscate_ip(obfuscated_ip: str) -> str:
 
 @app.route('/scops')
 def scops():
-    return redirect('https://www.splintercellonline.net/')#'http://127.0.0.1:8000')#'https://www.splintercellonline.net/')#'http://127.0.0.1:8001')#'https://www.splintercellonline.net/')
+    return redirect('https://www.splintercellonline.net/')#'http://127.0.0.1:8001')#'https://www.splintercellonline.net/')
 
 
 @app.route('/api/get_id', methods=['GET'])
@@ -314,7 +314,7 @@ def get_network_adapters():
     return jsonify({'nics':network_adapters})
 
 
-if __name__ == '__main__':
+def main():
     stop_previous_flask_server()
 
     pid_file = f'{os.path.expanduser("~")}/flask_server.pid'
@@ -334,3 +334,6 @@ if __name__ == '__main__':
     #     http_server.serve_forever()
     # else:
     app.run(debug=True, threaded=True, port=8001, use_reloader=False)
+
+if __name__ == "__main__":
+    main()

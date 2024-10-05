@@ -248,7 +248,7 @@
               <div v-else class="h-full">
                 <br>
 
-                <a class="text-2xl">[[ current_lobby.host_username ]]'s Lobby - [[ current_lobby.selected_game ]]</a>
+                <a class="text-2xl">[[ current_lobby.host_username ]]'s Lobby - [[ current_lobby.game_selection ]]</a>
                 <div class="flex flex-row justify-center m-2">
                   <button @click="end_connection()"
                     class="btn bg-base-300 stroke-base-300 text-base-500 w-full">Leave
@@ -396,9 +396,11 @@
           const content = {
             host: this.django_username,
             host_username: this.username,
-            signal_server: this.user_id,
+            signal_server: this.signal_server,
+            ps2_ip: this.ps2_ip,
             adapter: this.adapter,
-            selected_game: this.selected_game,
+            host_ip: this.user_id,
+            game_selection: this.game_selection,
           }
           axios.post(this.url + '/host_room/', content)
             .then(response => {
@@ -417,8 +419,8 @@
             signal_server: this.signal_server,
             ps2_ip: this.ps2_ip,
             adapter: this.adapter,
-            user_id: this.user_id,
-            selected_game: this.selected_game,
+            host_ip: this.user_id,
+            game_selection: this.game_selection,
           }
           axios.all([
             axios.post(this.url + '/host_room/', content),
@@ -435,10 +437,10 @@
         }
       },
       connect(endpoint,host_username,lobby) {
+        // this.connected();
         this.connected = 'true';
         this.connection = 'client';
         this.current_lobby = lobby;
-        console.log('Adapter: '+this.adapter)
         // create content for server arguments
         const content = {
           host_ip: endpoint,
@@ -518,7 +520,35 @@
 
     },
     watch: {
-    },
+      connected(newValue, oldValue) {
+        var content = {
+          username: this.username,
+        }
+        if (this.connected == 'true') {
+            axios.post(this.url + '/get_current_lobby/', content)
+            .then(response => {
+              if (Object.keys(response.data).length > 0){
+                this.current_lobby = response.data;
+              }
+              this.intervalCheck = setInterval(() => {
+                if (this.connected == 'true') {
+                  axios.post(this.url + '/get_current_lobby/', content)
+                .then(response => {
+                  // console.log(response.data)
+                  if (response != this.current_lobby){
+                    this.current_lobby = response.data;
+                  }
+                })
+                .catch((err) => console.error(err));
+              }
+            }, 10000)    
+          })
+            .catch((err) => console.error(err));
+          }
+  
+      return
+    }
+  },
     async created() {
       console.log("{{data}}")
       this.django_username = "{{data.django_username}}";
@@ -545,8 +575,6 @@
       // Replace these with your actual credentials
       const username = this.django_username;
       const password = this.discord_id;
-      console.log(username)
-      console.log(password)
 
       try {
         const response = await axios.post(this.url + '/api/v1/token/login/', {
@@ -566,7 +594,7 @@
         // handle error
         console.error('Error fetching auth token:', error);
       }
-      this.get_lobbies();
+      // this.get_lobbies();
     },
     mounted() {
       this.email = 1; //this is to avoid the email prompt for now, in the future we can incorporate it... will also have to create logic to send the email upon new content uploads...
@@ -574,48 +602,46 @@
         // document.getElementById(email_modal).showModal()
         email_modal.showModal()
       }
+      
       this.nics = [];
-        axios.get('/api/get_network_adapters')
-          .then(response => {
-            console.log(response.data)
-            console.log(response.data['nics'])
-            for (var item of response.data['nics']) {
-              // console.log(JSON.stringify(response.data[item]))
-              this.nics.push(item)
-            }
-          })
-          .catch((err) => console.error(err));
+                axios.get('/api/get_network_adapters')
+                  .then(response => {
+                    for (var item of response.data['nics']) {
+                      // console.log(JSON.stringify(response.data[item]))
+                      this.nics.push(item)
+                    }
+                  })
+                  .catch((err) => console.error(err));
+                  
+                  var content = {
+                      username: this.username,
+                    }
+                  axios.post(this.url + '/get_current_lobby/', content)
+                  .then(response => {
+                    if (Object.keys(response.data).length > 0){
+                      this.current_lobby = response.data;
+                      this.connected = 'true';
+                    } else {
+                      this.current_lobby = '';
+                      this.lobbies_temp = [];
+                      axios.get(this.url + '/get_lobbies/')
+                        .then(response => {
+                          // console.log(response.data)
+                          for (var item of Object.keys(response.data)) {
+                            // console.log(JSON.stringify(response.data[item]))
+                            this.lobbies_temp.push(response.data[item])
+                          }
+                          if (this.lobbies_temp !== this.lobbies){
+                            this.lobbies = this.lobbies_temp;
+                          }
+                        })
+                        .catch((err) => console.error(err));
+                      }
+                })
+                  .catch((err) => console.error(err));
 
-      this.intervalCheck = setInterval(() => {
-        this.lobbies_temp = [];
-        axios.get(this.url + '/get_lobbies/')
-          .then(response => {
-            // console.log(response.data)
-            for (var item of Object.keys(response.data)) {
-              // console.log(JSON.stringify(response.data[item]))
-              this.lobbies_temp.push(response.data[item])
-            }
-            if (this.lobbies_temp !== this.lobbies){
-              this.lobbies = this.lobbies_temp;
-            }
-          })
-          .catch((err) => console.error(err));
-      }, 10000)
     },
     computed: {
-      connected() {
-      if (this.connected == 'true') {
-        this.intervalCheck = setInterval(() => {
-        axios.get(this.url + '/get_current_lobby/')
-          .then(response => {
-            // console.log(response.data)
-            if (response != this.current_lobby){
-              this.current_lobby = response;
-            }
-          })
-          .catch((err) => console.error(err));
-      }, 10000)      }
-    }
     }
 
   }).mount('#index_app2')
